@@ -285,10 +285,10 @@ You are a new hire at a top-secret spy agency. Your job is to make sure everyone
 
 ## Storyboarding
 
-![Main Menu](Assets/Title-Screen-Storyboard.png)
-![Game Screen](Assets/Game-Screen-Storyboard.png)
-![Code Viewer](Assets/Program-Viewer.PNG)
-![End of Day Screen](Assets/End-Of-Day-Storyboard.png)
+![Main Menu](../public/assets/Title-Screen-Storyboard.png)
+![Game Screen](../public/assets/Game-Screen-Storyboard.png)
+![Code Viewer](../public/assets/Program-Viewer.PNG)
+![End of Day Screen](../public/assets/End-Of-Day-Storyboard.png)
 
 # Assets Needed
 
