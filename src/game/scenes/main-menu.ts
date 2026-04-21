@@ -19,7 +19,7 @@ export class MainMenu extends Scene implements ChangeableScene {
         this.logo = this.add.image(512, 300, "logo").setDepth(100);
 
         this.title = this.add
-            .text(512, 460, "Main Menu", {
+            .text(512, 460, "Start Game", {
                 fontFamily: "Arial Black",
                 fontSize: 38,
                 color: "#ffffff",
@@ -27,8 +27,21 @@ export class MainMenu extends Scene implements ChangeableScene {
                 strokeThickness: 8,
                 align: "center",
             })
+
+        const padding = 20;
+        this.add
+            .rectangle(512, 460, this.title.width + padding * 2, this.title.height + padding * 2)
+            .setStrokeStyle(3, 0xffffff)
+            .setFillStyle(0x000000, 0.3) // Semi-transparent black fill
+            .setDepth(99) // Behind the text
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.changeScene());
+
+        this.title
             .setOrigin(0.5)
-            .setDepth(100);
+            .setDepth(100)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.changeScene());
 
         EventBus.emit("current-scene-ready", this);
     }
