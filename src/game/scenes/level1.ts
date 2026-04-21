@@ -10,6 +10,9 @@ export class Level1 extends Scene {
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
     person1: Phaser.GameObjects.Sprite;
+    person2: Phaser.GameObjects.Sprite;
+    person3: Phaser.GameObjects.Sprite;
+    person4: Phaser.GameObjects.Sprite;
 
     constructor() {
         super("Level1");
@@ -19,13 +22,32 @@ export class Level1 extends Scene {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
-        this.background = this.add.image(512, 384, "background");
+        // Make background fill the screen
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
+        this.background = this.add.image(screenWidth / 2, screenHeight / 2, "background");
+        this.background.displayWidth = screenWidth;
+        this.background.displayHeight = screenHeight;
         this.background.setAlpha(0.5);
 
-        this.phaserLogo = new PhaserLogo(this, this.cameras.main.width / 2, 0);
         this.fpsText = new FpsText(this);
 
-        this.person1 = this.add.sprite(200, 200, "person1").setScale(2);
+        // Center person1 image
+        this.person1 = this.add.sprite(screenWidth / 2, (screenHeight / 2.75), "person1").setScale(3).setDepth(0);
+        //his.person2 = this.add.sprite(400, 200, "person2").setScale(2);
+        //this.person3 = this.add.sprite(600, 200, "person3").setScale(2);
+        //this.person4 = this.add.sprite(800, 200, "person4").setScale(2);
+
+
+        // Add a rectangle that fills the bottom half of the screen
+        const tempdesk = this.add.rectangle(
+            screenWidth / 2,
+            screenHeight * 0.75, // center of bottom half
+            screenWidth,
+            screenHeight / 2,
+            0xffffff
+        ).setStrokeStyle(3, 0x000000).setDepth(0.5);
+
 
         EventBus.emit("current-scene-ready", this);
     }
