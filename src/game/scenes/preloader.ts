@@ -29,6 +29,23 @@ export class Preloader extends Scene {
         this.load.image("logo", "logo.png");
         this.load.image("star", "star.png");
         this.load.image("phaser-logo", "phaser-logo.png");
+        this.load.image("background", "background.png");
+        this.load.image("person1", "Townfolk-Adult-F-001.png");
+        this.load.image("person2", "Townfolk-Adult-F-002.png");
+        this.load.image("person3", "Townfolk-Adult-F-003.png");
+        this.load.image("person4", "Townfolk-Adult-F-004.png");
+        this.load.image("person5", "Townfolk-Adult-F-005.png");
+        this.load.image("person6", "Townfolk-Adult-F-006.png");
+        this.load.image("person7", "Townfolk-Adult-M-001.png");
+        this.load.image("person8", "Townfolk-Adult-M-002.png");
+        this.load.image("person9", "Townfolk-Adult-M-003.png");
+        this.load.image("person10", "Townfolk-Adult-M-004.png");
+        this.load.image("person11", "Townfolk-Adult-M-005.png");
+        this.load.image("person12", "Townfolk-Adult-M-006.png");
+        this.load.image("person13", "Townfolk-Adult-M-007.png");
+        this.load.image("person14", "Townfolk-Adult-M-008.png");
+        this.load.image("person15", "Townfolk-Adult-M-009.png");
+    
     }
 
     create() {
