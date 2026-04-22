@@ -74,6 +74,7 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Back.Out",
         });
+        this.createIDCard();
 
         // Add a rectangle that fills the bottom half of the screen
 
@@ -138,17 +139,7 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Power2",
         });
-        this.currentPersonIndex++;
-        if (this.currentPersonIndex < this.people.length) {
-            this.currentPerson = this.people[this.currentPersonIndex];
-            this.currentPerson.setVisible(true);
-            this.tweens.add({
-                targets: this.currentPerson,
-                scale: 3,
-                duration: this.moveSpeed,
-                ease: "Back.Out",
-            });
-        }
+        this.nextPerson();
     }
 
     personRejected() {
@@ -161,7 +152,12 @@ export class Level1 extends Scene {
                 duration: this.moveSpeed,
                 ease: "Power2",
             });
-            this.currentPersonIndex++;
+            this.nextPerson();
+        });
+    }
+    nextPerson() {
+        this.currentPersonIndex++;
+        this.time.delayedCall(this.moveSpeed, () => {
             if (this.currentPersonIndex < this.people.length) {
                 this.currentPerson = this.people[this.currentPersonIndex];
                 this.currentPerson.setVisible(true);
@@ -171,7 +167,36 @@ export class Level1 extends Scene {
                     duration: this.moveSpeed,
                     ease: "Back.Out",
                 });
+                this.createIDCard();
             }
         });
+    }
+    createIDCard() {
+        const idCard = this.add
+            .container(this.currentPerson.x, this.currentPerson.y + 150)
+            .setDepth(1);
+        const rect = this.add
+            .rectangle(0, 0, 200, 100, 0xffffff, 0.9)
+            .setStrokeStyle(2, 0x000000)
+            .setOrigin(0.5);
+        const nameText = this.add.text(
+            -90,
+            -35,
+            `Name: ${this.currentPerson.characterName}`,
+            { fontSize: "16px", color: "#000" },
+        );
+        const codenameText = this.add.text(
+            -90,
+            -10,
+            `Codename: ${this.currentPerson.codename}`,
+            { fontSize: "16px", color: "#000" },
+        );
+        const idNumberText = this.add.text(
+            -90,
+            15,
+            `ID: ${this.currentPerson.idNumber}`,
+            { fontSize: "16px", color: "#000" },
+        );
+        idCard.add([rect, nameText, codenameText, idNumberText]);
     }
 }
