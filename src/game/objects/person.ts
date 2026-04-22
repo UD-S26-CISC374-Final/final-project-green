@@ -57,7 +57,8 @@ export default class person extends Phaser.GameObjects.Sprite {
     codename: string;
     idNumber: integer;
     fakeCodename: string;
-    constructor(scene: Phaser.Scene, x: number, y: number) {
+    impostor: boolean;
+    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean) {
         const randomIndex = Math.floor(Math.random() * Spritelist.length);
         const texture = Spritelist[randomIndex];
         super(scene, x, y, texture);
@@ -65,14 +66,18 @@ export default class person extends Phaser.GameObjects.Sprite {
             randomIndex < 6 ?
                 NamelistF[Math.floor(Math.random() * NamelistF.length)]
             :   NamelistM[Math.floor(Math.random() * NamelistM.length)];
-        this.codename = CodenameList[Math.floor(Math.random() * CodenameList.length)];
+        this.codename =
+            CodenameList[Math.floor(Math.random() * CodenameList.length)];
         this.idNumber = Math.floor(Math.random() * 1000);
         // Ensure fakeCodename is not the same as codename
-        let fakeCodename = CodenameList[Math.floor(Math.random() * CodenameList.length)];
+        let fakeCodename =
+            CodenameList[Math.floor(Math.random() * CodenameList.length)];
         while (fakeCodename === this.codename && CodenameList.length > 1) {
-            fakeCodename = CodenameList[Math.floor(Math.random() * CodenameList.length)];
+            fakeCodename =
+                CodenameList[Math.floor(Math.random() * CodenameList.length)];
         }
         this.fakeCodename = fakeCodename;
+        this.impostor = impostor;
         scene.add.existing(this);
     }
 

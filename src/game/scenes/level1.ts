@@ -4,6 +4,7 @@ import { Scene } from "phaser";
 import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
 import person from "../objects/person";
+import notebook from "../objects/notebook";
 
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
@@ -18,6 +19,8 @@ export class Level1 extends Scene {
     person4: person;
     people: person[];
     currentPersonIndex: number = 0;
+    notebook: notebook;
+    score: number = 0;
 
     currentPerson: person;
     constructor() {
@@ -25,6 +28,8 @@ export class Level1 extends Scene {
     }
 
     create() {
+        // Explicitly enable input on the scene
+        this.input.enabled = true;
         this.currentPerson = this.person1;
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
@@ -47,27 +52,37 @@ export class Level1 extends Scene {
             this,
             screenWidth / 2,
             screenHeight / 2.75,
+            false,
         ).setVisible(false);
         this.person2 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
+            false,
         ).setVisible(false);
         this.person3 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
+            true,
         ).setVisible(false);
         this.person4 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
+            false,
         ).setVisible(false);
+
+        this.notebook = new notebook(this, screenWidth / 4, screenHeight / 1.35)
+            .setDepth(1)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.notebook.openNotebook());
 
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
 
         this.currentPerson.setVisible(true);
+        // Do not set currentPerson as interactive
         this.tweens.add({
             targets: this.currentPerson,
             scale: 3,
@@ -89,9 +104,10 @@ export class Level1 extends Scene {
                 0xffffff,
             )
             .setStrokeStyle(3, 0x000000)
-            .setDepth(0.5);
+            .setDepth(0.4);
+        // Do not set desk as interactive at all
 
-        // Add two buttons on the desk
+        // Add two buttons on the desk at the very end, with highest depth
         const buttonRadius = 40;
         const buttonY = deskY;
         const buttonSpacing = 120;
@@ -104,9 +120,12 @@ export class Level1 extends Scene {
                 0xff0000,
             )
             .setStrokeStyle(4, 0x880000)
-            .setDepth(1)
+            .setDepth(100)
             .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => this.personRejected());
+            .on("pointerdown", () => {
+                console.log("Red button clicked");
+                this.personRejected();
+            });
         // Green button (right)
         const greenButton = this.add
             .circle(
@@ -116,9 +135,12 @@ export class Level1 extends Scene {
                 0x00ff00,
             )
             .setStrokeStyle(4, 0x006600)
-            .setDepth(1)
+            .setDepth(100)
             .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => this.personAccepted());
+            .on("pointerdown", () => {
+                console.log("Green button clicked");
+                this.personAccepted();
+            });
 
         EventBus.emit("current-scene-ready", this);
     }
@@ -174,11 +196,12 @@ export class Level1 extends Scene {
     createIDCard() {
         const idCard = this.add
             .container(this.currentPerson.x, this.currentPerson.y + 150)
-            .setDepth(1);
+            .setDepth(0.5);
         const rect = this.add
             .rectangle(0, 0, 200, 100, 0xffffff, 0.9)
             .setStrokeStyle(2, 0x000000)
             .setOrigin(0.5);
+        // Do not set ID card rect as interactive at all
         const nameText = this.add.text(
             -90,
             -35,
