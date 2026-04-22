@@ -5,6 +5,9 @@ import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
 
 export class Level1 extends Scene {
+
+    moveSpeed: number = 7500;
+
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
@@ -14,11 +17,13 @@ export class Level1 extends Scene {
     person3: Phaser.GameObjects.Sprite;
     person4: Phaser.GameObjects.Sprite;
 
+    currentPerson: Phaser.GameObjects.Sprite;
     constructor() {
         super("Level1");
     }
 
     create() {
+        this.currentPerson = this.person1;
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
@@ -33,18 +38,20 @@ export class Level1 extends Scene {
         this.fpsText = new FpsText(this);
 
         // Center person1 image, start small
-        this.person1 = this.add.sprite(screenWidth / 2, (screenHeight / 2.75), "person1").setScale(0.2).setDepth(0);
+        this.person1 = this.add.sprite(screenWidth / 2, (screenHeight / 2.75), "person1").setScale(0.2).setDepth(0).setVisible(false);
 
+        this.currentPerson = this.person1;
         // Animate person1 to grow to normal size
+        this.currentPerson.setVisible(true);
         this.tweens.add({
-            targets: this.person1,
+            targets: this.currentPerson,
             scale: 3,
-            duration: 10000,
+            duration: this.moveSpeed,
             ease: 'Back.Out',
         });
-        //his.person2 = this.add.sprite(400, 200, "person2").setScale(2);
-        //this.person3 = this.add.sprite(600, 200, "person3").setScale(2);
-        //this.person4 = this.add.sprite(800, 200, "person4").setScale(2);
+        this.person2 = this.add.sprite(400, 200, "person2").setScale(2).setVisible(false);
+        this.person3 = this.add.sprite(600, 200, "person3").setScale(2).setVisible(false);
+        this.person4 = this.add.sprite(800, 200, "person4").setScale(2).setVisible(false);
 
 
         // Add a rectangle that fills the bottom half of the screen
@@ -69,14 +76,17 @@ export class Level1 extends Scene {
             buttonY,
             buttonRadius,
             0xff0000
-        ).setStrokeStyle(4, 0x880000).setDepth(1).setInteractive({ useHandCursor: true });
+        ).setStrokeStyle(4, 0x880000).setDepth(1).setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.personRejected());
         // Green button (right)
         const greenButton = this.add.circle(
             screenWidth / 2 + buttonSpacing,
             buttonY,
             buttonRadius,
             0x00ff00
-        ).setStrokeStyle(4, 0x006600).setDepth(1).setInteractive({ useHandCursor: true });
+        ).setStrokeStyle(4, 0x006600).setDepth(1).setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.personAccepted());
+
 
 
         EventBus.emit("current-scene-ready", this);
@@ -89,4 +99,34 @@ export class Level1 extends Scene {
     changeScene() {
         this.scene.start("GameOver");
     }
+
+    personAccepted() {
+        this.tweens.add({
+            targets: this.currentPerson,
+            x: this.cameras.main.width + 200, // Move off-screen to the right
+            y: this.currentPerson.y,
+            duration: this.moveSpeed,
+            ease: 'Power2',
+        });
+        this.currentPerson = this.person2;
+
+
+    }
+
+    personRejected() {
+        
+        // Wait 3 seconds before moving offscreen to the left
+        this.time.delayedCall(3000, () => {
+            this.tweens.add({
+                targets: this.currentPerson,
+                x: -200, // Move offscreen to the left
+                y: this.currentPerson.y,
+                duration: this.moveSpeed,
+                ease: 'Power2',
+            });
+        });
+        this.currentPerson = this.person2;
+    }
+
+
 }
