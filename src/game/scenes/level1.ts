@@ -3,6 +3,7 @@ import { Scene } from "phaser";
 
 import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
+import person from "../objects/person";
 
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
@@ -11,14 +12,14 @@ export class Level1 extends Scene {
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
-    person1: Phaser.GameObjects.Sprite;
-    person2: Phaser.GameObjects.Sprite;
-    person3: Phaser.GameObjects.Sprite;
-    person4: Phaser.GameObjects.Sprite;
-    people: Phaser.GameObjects.Sprite[];
+    person1: person;
+    person2: person;
+    person3: person;
+    person4: person;
+    people: person[];
     currentPersonIndex: number = 0;
 
-    currentPerson: Phaser.GameObjects.Sprite;
+    currentPerson: person;
     constructor() {
         super("Level1");
     }
@@ -42,26 +43,30 @@ export class Level1 extends Scene {
 
         this.fpsText = new FpsText(this);
 
-        this.person1 = this.add
-            .sprite(screenWidth / 2, screenHeight / 2.75, "person1")
-            .setScale(0.2)
-            .setDepth(0)
-            .setVisible(false);
-        this.person2 = this.add
-            .sprite(screenWidth / 2, screenHeight / 2.75, "person2")
-            .setScale(0.2)
-            .setDepth(0)
-            .setVisible(false);
-        this.person3 = this.add
-            .sprite(screenWidth / 2, screenHeight / 2.75, "person3")
-            .setScale(0.2)
-            .setDepth(0)
-            .setVisible(false);
-        this.person4 = this.add
-            .sprite(screenWidth / 2, screenHeight / 2.75, "person4")
-            .setScale(0.2)
-            .setDepth(0)
-            .setVisible(false);
+        this.person1 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            "person1",
+        ).setVisible(false);
+        this.person2 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            "person2",
+        ).setVisible(false);
+        this.person3 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            "person3",
+        ).setVisible(false);
+        this.person4 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            "person4",
+        ).setVisible(false);
 
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
