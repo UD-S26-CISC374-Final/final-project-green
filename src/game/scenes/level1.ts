@@ -47,25 +47,21 @@ export class Level1 extends Scene {
             this,
             screenWidth / 2,
             screenHeight / 2.75,
-            "person1",
         ).setVisible(false);
         this.person2 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
-            "person2",
         ).setVisible(false);
         this.person3 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
-            "person3",
         ).setVisible(false);
         this.person4 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
-            "person4",
         ).setVisible(false);
 
         this.currentPerson = this.person1;
