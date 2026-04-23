@@ -32,6 +32,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
+        let giveButton: Phaser.GameObjects.Text;
         const overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -83,7 +84,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(giveButton);
             });
         closeButton.setOrigin(0.5, 0.5).setDepth(12);
-        const giveButton = this.scene.add
+        giveButton = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2 + 100,

@@ -141,7 +141,7 @@ export class Level1 extends Scene {
             this,
             screenWidth / 1.25,
             screenHeight / 1.35,
-            `int main() { int x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf(\"ID: %d\\n\", y); \nreturn 0; \n}`,
+            `int main() { \nint x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf(\"ID: %d\", y); \nreturn 0; \n}`,
             this.person4.idNumber,
         ).setDepth(1);
 
