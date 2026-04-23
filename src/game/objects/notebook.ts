@@ -1,5 +1,3 @@
-import phaser from "phaser";
-
 export default class notebook extends Phaser.GameObjects.Container {
     public rect: Phaser.GameObjects.Rectangle;
     private text: Phaser.GameObjects.Text;

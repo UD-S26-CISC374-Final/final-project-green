@@ -209,6 +209,9 @@ export class Level1 extends Scene {
         console.log("Person 2:", this.person2);
         console.log("Person 3:", this.person3);
         console.log("Person 4:", this.person4);
+
+        //fix errors with unused variables
+        console.log(tempdesk, redButton, greenButton, tempBlob);
     }
 
     update() {
