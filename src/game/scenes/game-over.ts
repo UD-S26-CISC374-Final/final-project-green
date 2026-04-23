@@ -1,6 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { SCORE } from "./level1";
+import { SCORE } from "../objects/score";
 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
