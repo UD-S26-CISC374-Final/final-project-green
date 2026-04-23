@@ -114,7 +114,7 @@ export class Level1 extends Scene {
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
 
-        for (let tempperson of this.people) {
+        for (const tempperson of this.people) {
             if (tempperson.impostor) {
                 tempperson.setFakeCodenameFromPool(this.people);
             }

@@ -44,6 +44,18 @@ export default class notebook extends Phaser.GameObjects.Container {
             )
             .setStrokeStyle(2, 0x000000)
             .setDepth(11);
+        const codesText = this.scene.add
+            .text(
+                this.scene.cameras.main.width / 2,
+                this.scene.cameras.main.height / 2 - 25,
+                "Today's Codes:\n" + this.codes,
+                {
+                    fontSize: "15px",
+                    color: "#000000",
+                },
+            )
+            .setOrigin(0.5, 0.5)
+            .setDepth(13);
         const closeButton = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
@@ -62,18 +74,5 @@ export default class notebook extends Phaser.GameObjects.Container {
                 this.scene.children.remove(codesText);
             });
         closeButton.setOrigin(0.5, 0.5).setDepth(12);
-
-        const codesText = this.scene.add
-            .text(
-                this.scene.cameras.main.width / 2,
-                this.scene.cameras.main.height / 2 - 25,
-                "Today's Codes:\n" + this.codes,
-                {
-                    fontSize: "15px",
-                    color: "#000000",
-                },
-            )
-            .setOrigin(0.5, 0.5)
-            .setDepth(13);
     }
 }
