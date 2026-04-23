@@ -73,10 +73,12 @@ export class Level1 extends Scene {
             false,
         ).setVisible(false);
 
-        this.notebook = new notebook(this, screenWidth / 4, screenHeight / 1.35)
-            .setDepth(1)
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => this.notebook.openNotebook());
+        this.notebook = new notebook(
+            this,
+            screenWidth / 4,
+            screenHeight / 1.35,
+        ).setDepth(1);
+        // Make the notebook's rectangle interactive
 
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
@@ -154,6 +156,10 @@ export class Level1 extends Scene {
     }
 
     personAccepted() {
+        this.input.enabled = false; // Disable input while moving offscreen
+        if (!this.currentPerson.impostor) {
+            this.score++;
+        }
         this.tweens.add({
             targets: this.currentPerson,
             x: this.cameras.main.width + 200, // Move off-screen to the right
@@ -166,6 +172,10 @@ export class Level1 extends Scene {
 
     personRejected() {
         // Wait 3 seconds before moving offscreen to the left
+        this.input.enabled = false; // Disable input while waiting
+        if (this.currentPerson.impostor) {
+            this.score++;
+        }
         this.time.delayedCall(3000, () => {
             this.tweens.add({
                 targets: this.currentPerson,
@@ -190,6 +200,10 @@ export class Level1 extends Scene {
                     ease: "Back.Out",
                 });
                 this.createIDCard();
+                this.input.enabled = true; // Re-enable input for the next person
+            } else {
+                console.log("All people processed. Final score:", this.score);
+                this.changeScene();
             }
         });
     }
