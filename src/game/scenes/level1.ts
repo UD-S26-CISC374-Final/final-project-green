@@ -1,12 +1,12 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
+import { setScore } from "../objects/score";
 
 import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
 import person from "../objects/person";
 import notebook from "../objects/notebook";
-
-export let SCORE: number = 0;
+import giveNote from "../objects/giveNote";
 
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
@@ -23,6 +23,7 @@ export class Level1 extends Scene {
     currentPersonIndex: number = 0;
     notebook: notebook;
     score: number = 0;
+    giveNote: giveNote;
 
     currentPerson: person;
     constructor() {
@@ -64,7 +65,8 @@ export class Level1 extends Scene {
         ).setVisible(false);
         while (
             this.person2.characterName === this.person1.characterName ||
-            this.person2.codename === this.person1.codename
+            this.person2.codename === this.person1.codename ||
+            this.person2.idNumber === this.person1.idNumber
         ) {
             this.person2 = new person(
                 this,
@@ -83,7 +85,9 @@ export class Level1 extends Scene {
             this.person3.characterName === this.person1.characterName ||
             this.person3.characterName === this.person2.characterName ||
             this.person3.codename === this.person1.codename ||
-            this.person3.codename === this.person2.codename
+            this.person3.codename === this.person2.codename ||
+            this.person3.idNumber === this.person1.idNumber ||
+            this.person3.idNumber === this.person2.idNumber
         ) {
             this.person3 = new person(
                 this,
@@ -104,7 +108,10 @@ export class Level1 extends Scene {
             this.person4.characterName === this.person3.characterName ||
             this.person4.codename === this.person1.codename ||
             this.person4.codename === this.person2.codename ||
-            this.person4.codename === this.person3.codename
+            this.person4.codename === this.person3.codename ||
+            this.person4.idNumber === this.person1.idNumber ||
+            this.person4.idNumber === this.person2.idNumber ||
+            this.person4.idNumber === this.person3.idNumber
         ) {
             this.person4 = new person(
                 this,
@@ -129,6 +136,14 @@ export class Level1 extends Scene {
             `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
         ).setDepth(1);
         // Notebook handles its own interactivity
+        const startNumber = (this.person4.idNumber - 5) / 2;
+        this.giveNote = new giveNote(
+            this,
+            screenWidth / 1.25,
+            screenHeight / 1.35,
+            `int main() { int x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf(\"ID: %d\\n\", y); \nreturn 0; \n}`,
+            this.person4.idNumber,
+        ).setDepth(1);
 
         this.currentPerson.setVisible(true);
         // Do not set currentPerson as interactive
@@ -198,7 +213,7 @@ export class Level1 extends Scene {
             .text(
                 50,
                 50,
-                "Ok so heres how the alpha version works\nThe person in front of you is supposedly one of your coworkers\nIt is your job to determine if they are telling the truth\nAs you can see they have given you their ID card\nIf you click the codes book on the left of the desk,\nit will show you a program\nIf the name on the ID card matches what the print\nstatement for the respective Codename\nat the end of the code would print,\nthe person is not an impostor\nIf the name does not match, they are an impostor\nFor impostors hit the red button and \ncoworkers hit the green button\nYeah thats it for now ok bye good luck",
+                "Ok so heres how the alpha version works\nThe person in front of you is supposedly one of your coworkers\nIt is your job to determine if they are telling the truth\nAs you can see they have given you their ID card\nIf you click the codes book on the left of the desk,\nit will show you a program\nIf the name on the ID card matches what the print\nstatement for the respective Codename\nat the end of the code would print,\nthe person is not an impostor\nIf the name does not match, they are an impostor\nFor impostors hit the red button and \ncoworkers hit the green button\nYou also have that note\nGive that note to the person with the ID number \nyou get from tracing the code in the note\nYeah thats it for now ok bye good luck",
                 {
                     fontSize: "16px",
                     color: "#000000",
@@ -221,7 +236,7 @@ export class Level1 extends Scene {
     }
 
     changeScene() {
-        SCORE += this.score;
+        setScore(this.score);
         this.scene.start("GameOver");
     }
 

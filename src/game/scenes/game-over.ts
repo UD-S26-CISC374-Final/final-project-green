@@ -1,6 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { SCORE } from "./level1";
+import { SCORE } from "../objects/score";
 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -32,7 +32,7 @@ export class GameOver extends Scene {
             .setDepth(100);
 
         this.scoreText = this.add
-            .text(512, 450, `Final Score: ${SCORE}/4`, {
+            .text(512, 450, `Final Score: ${SCORE}/5`, {
                 fontFamily: "Arial Black",
                 fontSize: 32,
                 color: "#ffffff",
