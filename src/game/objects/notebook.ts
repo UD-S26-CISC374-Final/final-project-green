@@ -8,13 +8,13 @@ export default class notebook extends Phaser.GameObjects.Container {
         super(scene, x, y);
         this.codes = codes;
         this.rect = this.scene.add
-            .rectangle(0, 0, 150, 200, 0xffffff)
+            .rectangle(0, 0, 75, 100, 0xffffff)
             .setStrokeStyle(2, 0x000000)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => this.openNotebook());
         this.text = this.scene.add
-            .text(0, 0, "Codes Notebook", {
-                fontSize: "16px",
+            .text(0, 0, "Today's\nCodes", {
+                fontSize: "14px",
                 color: "#000000",
             })
             .setOrigin(0.5, 0.5);

@@ -30,6 +30,7 @@ export class Preloader extends Scene {
         this.load.image("star", "star.png");
         this.load.image("phaser-logo", "phaser-logo.png");
         this.load.image("background", "background.png");
+        this.load.image("desk+background", "Desk+Background.png");
         this.load.image("person1", "Townfolk-Adult-F-001.png");
         this.load.image("person2", "Townfolk-Adult-F-002.png");
         this.load.image("person3", "Townfolk-Adult-F-003.png");
@@ -45,7 +46,6 @@ export class Preloader extends Scene {
         this.load.image("person13", "Townfolk-Adult-M-007.png");
         this.load.image("person14", "Townfolk-Adult-M-008.png");
         this.load.image("person15", "Townfolk-Adult-M-009.png");
-    
     }
 
     create() {

@@ -40,11 +40,11 @@ export class Level1 extends Scene {
         this.background = this.add.image(
             screenWidth / 2,
             screenHeight / 2,
-            "background",
+            "desk+background",
         );
         this.background.displayWidth = screenWidth;
         this.background.displayHeight = screenHeight;
-        this.background.setAlpha(0.5);
+        this.background.setAlpha(1);
 
         this.fpsText = new FpsText(this);
 
@@ -153,7 +153,8 @@ export class Level1 extends Scene {
                 0xffffff,
             )
             .setStrokeStyle(3, 0x000000)
-            .setDepth(0.4);
+            .setDepth(0.4)
+            .setVisible(false);
         // Do not set desk as interactive at all
 
         // Add two buttons on the desk at the very end, with highest depth
@@ -190,6 +191,18 @@ export class Level1 extends Scene {
                 console.log("Green button clicked");
                 this.personAccepted();
             });
+
+        const tempBlob = this.add
+            .text(
+                50,
+                50,
+                "Ok so heres how the alpha version works\nThe person in front of you is supposedly one of your coworkers\nIt is your job to determine if they are telling the truth\nAs you can see they have given you their ID card\nIf you click the codes book on the left of the desk,\nit will show you a program\nIf the name on the ID card matches what the print\nstatement for the respective Codename\nat the end of the code would print,\nthe person is not an impostor\nIf the name does not match, they are an impostor\nFor impostors hit the red button and \ncoworkers hit the green button\nYeah thats it for now ok bye good luck",
+                {
+                    fontSize: "16px",
+                    color: "#000000",
+                },
+            )
+            .setDepth(1);
 
         EventBus.emit("current-scene-ready", this);
         console.log("Person 1:", this.person1);
@@ -263,29 +276,29 @@ export class Level1 extends Scene {
             .container(this.currentPerson.x, this.currentPerson.y + 150)
             .setDepth(0.5);
         const rect = this.add
-            .rectangle(0, 0, 200, 100, 0xffffff, 0.9)
+            .rectangle(0, 0, 150, 75, 0xffffff, 1)
             .setStrokeStyle(2, 0x000000)
             .setOrigin(0.5);
         // Do not set ID card rect as interactive at all
         const nameText = this.add.text(
-            -90,
+            -70,
             -35,
             `Name: ${this.currentPerson.characterName}`,
-            { fontSize: "16px", color: "#000" },
+            { fontSize: "14px", color: "#000" },
         );
         const codenameText = this.add.text(
-            -90,
+            -70,
             -10,
             this.currentPerson.impostor ?
                 `Codename: ${this.currentPerson.fakeCodename}`
             :   `Codename: ${this.currentPerson.codename}`,
-            { fontSize: "16px", color: "#000" },
+            { fontSize: "14px", color: "#000" },
         );
         const idNumberText = this.add.text(
-            -90,
+            -70,
             15,
             `ID: ${this.currentPerson.idNumber}`,
-            { fontSize: "16px", color: "#000" },
+            { fontSize: "14px", color: "#000" },
         );
         idCard.add([rect, nameText, codenameText, idNumberText]);
     }
