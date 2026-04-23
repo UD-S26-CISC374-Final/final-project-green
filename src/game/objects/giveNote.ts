@@ -113,6 +113,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.setVisible(false);
             });
         giveButton.setOrigin(0.5, 0.5).setDepth(12);
+        console.log(giveButton); // bug fix stuff i guess
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;
