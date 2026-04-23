@@ -56,7 +56,7 @@ export default class person extends Phaser.GameObjects.Sprite {
     characterName: string;
     codename: string;
     idNumber: number;
-    fakeCodename: string;
+    fakeCodename: string = "";
     impostor: boolean;
     constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean) {
         const randomIndex = Math.floor(Math.random() * Spritelist.length);
@@ -70,17 +70,19 @@ export default class person extends Phaser.GameObjects.Sprite {
             CodenameList[Math.floor(Math.random() * CodenameList.length)];
         this.idNumber = Math.floor(Math.random() * 1000);
         // Ensure fakeCodename is not the same as codename
-        let fakeCodename =
-            CodenameList[Math.floor(Math.random() * CodenameList.length)];
-        while (fakeCodename === this.codename && CodenameList.length > 1) {
-            fakeCodename =
-                CodenameList[Math.floor(Math.random() * CodenameList.length)];
-        }
-        this.fakeCodename = fakeCodename;
         this.impostor = impostor;
         scene.add.existing(this);
     }
+    setFakeCodenameFromPool(pool: person[]) {
+        let fake: string;
 
+        do {
+            const random = pool[Math.floor(Math.random() * pool.length)];
+            fake = random.codename;
+        } while (fake === this.codename);
+
+        this.fakeCodename = fake;
+    }
     getIdCard() {
         return {
             name: this.characterName,

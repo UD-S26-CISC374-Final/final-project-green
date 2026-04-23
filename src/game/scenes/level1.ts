@@ -54,6 +54,12 @@ export class Level1 extends Scene {
             screenHeight / 2.75,
             false,
         ).setVisible(false);
+        this.person2 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            false,
+        ).setVisible(false);
         while (
             this.person2.characterName === this.person1.characterName ||
             this.person2.codename === this.person1.codename
@@ -65,6 +71,12 @@ export class Level1 extends Scene {
                 false,
             ).setVisible(false);
         }
+        this.person3 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            true,
+        ).setVisible(false);
         while (
             this.person3.characterName === this.person1.characterName ||
             this.person3.characterName === this.person2.characterName ||
@@ -78,6 +90,12 @@ export class Level1 extends Scene {
                 true,
             ).setVisible(false);
         }
+        this.person4 = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            false,
+        ).setVisible(false);
         while (
             this.person4.characterName === this.person1.characterName ||
             this.person4.characterName === this.person2.characterName ||
@@ -93,6 +111,14 @@ export class Level1 extends Scene {
                 false,
             ).setVisible(false);
         }
+        this.currentPerson = this.person1;
+        this.people = [this.person1, this.person2, this.person3, this.person4];
+
+        for (let tempperson of this.people) {
+            if (tempperson.impostor) {
+                tempperson.setFakeCodenameFromPool(this.people);
+            }
+        }
 
         this.notebook = new notebook(
             this,
@@ -102,9 +128,6 @@ export class Level1 extends Scene {
         ).setDepth(1);
         // Notebook handles its own interactivity
 
-        this.currentPerson = this.person1;
-        this.people = [this.person1, this.person2, this.person3, this.person4];
-
         this.currentPerson.setVisible(true);
         // Do not set currentPerson as interactive
         this.tweens.add({
@@ -113,7 +136,9 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Back.Out",
         });
-        this.createIDCard();
+        this.time.delayedCall(1, () => {
+            this.createIDCard();
+        });
 
         // Add a rectangle that fills the bottom half of the screen
 
@@ -167,6 +192,10 @@ export class Level1 extends Scene {
             });
 
         EventBus.emit("current-scene-ready", this);
+        console.log("Person 1:", this.person1);
+        console.log("Person 2:", this.person2);
+        console.log("Person 3:", this.person3);
+        console.log("Person 4:", this.person4);
     }
 
     update() {
