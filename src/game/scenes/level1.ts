@@ -6,6 +6,8 @@ import FpsText from "../objects/fps-text";
 import person from "../objects/person";
 import notebook from "../objects/notebook";
 
+export let SCORE: number = 0;
+
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
 
@@ -219,6 +221,7 @@ export class Level1 extends Scene {
     }
 
     changeScene() {
+        SCORE += this.score;
         this.scene.start("GameOver");
     }
 
