@@ -55,7 +55,7 @@ const Spritelist: string[] = [
 export default class person extends Phaser.GameObjects.Sprite {
     characterName: string;
     codename: string;
-    idNumber: integer;
+    idNumber: number;
     fakeCodename: string;
     impostor: boolean;
     constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean) {

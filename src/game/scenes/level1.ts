@@ -54,31 +54,53 @@ export class Level1 extends Scene {
             screenHeight / 2.75,
             false,
         ).setVisible(false);
-        this.person2 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            false,
-        ).setVisible(false);
-        this.person3 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            true,
-        ).setVisible(false);
-        this.person4 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            false,
-        ).setVisible(false);
+        while (
+            this.person2.characterName === this.person1.characterName ||
+            this.person2.codename === this.person1.codename
+        ) {
+            this.person2 = new person(
+                this,
+                screenWidth / 2,
+                screenHeight / 2.75,
+                false,
+            ).setVisible(false);
+        }
+        while (
+            this.person3.characterName === this.person1.characterName ||
+            this.person3.characterName === this.person2.characterName ||
+            this.person3.codename === this.person1.codename ||
+            this.person3.codename === this.person2.codename
+        ) {
+            this.person3 = new person(
+                this,
+                screenWidth / 2,
+                screenHeight / 2.75,
+                true,
+            ).setVisible(false);
+        }
+        while (
+            this.person4.characterName === this.person1.characterName ||
+            this.person4.characterName === this.person2.characterName ||
+            this.person4.characterName === this.person3.characterName ||
+            this.person4.codename === this.person1.codename ||
+            this.person4.codename === this.person2.codename ||
+            this.person4.codename === this.person3.codename
+        ) {
+            this.person4 = new person(
+                this,
+                screenWidth / 2,
+                screenHeight / 2.75,
+                false,
+            ).setVisible(false);
+        }
 
         this.notebook = new notebook(
             this,
             screenWidth / 4,
             screenHeight / 1.35,
+            `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
         ).setDepth(1);
-        // Make the notebook's rectangle interactive
+        // Notebook handles its own interactivity
 
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
@@ -122,7 +144,7 @@ export class Level1 extends Scene {
                 0xff0000,
             )
             .setStrokeStyle(4, 0x880000)
-            .setDepth(100)
+            .setDepth(1)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 console.log("Red button clicked");
@@ -137,7 +159,7 @@ export class Level1 extends Scene {
                 0x00ff00,
             )
             .setStrokeStyle(4, 0x006600)
-            .setDepth(100)
+            .setDepth(1)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 console.log("Green button clicked");
@@ -225,7 +247,9 @@ export class Level1 extends Scene {
         const codenameText = this.add.text(
             -90,
             -10,
-            `Codename: ${this.currentPerson.codename}`,
+            this.currentPerson.impostor ?
+                `Codename: ${this.currentPerson.fakeCodename}`
+            :   `Codename: ${this.currentPerson.codename}`,
             { fontSize: "16px", color: "#000" },
         );
         const idNumberText = this.add.text(
