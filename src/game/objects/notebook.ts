@@ -23,6 +23,10 @@ export default class notebook extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
     }
 
+    setText(codes: string) {
+        this.codes = codes;
+    }
+
     openNotebook() {
         const overlay = this.scene.add
             .rectangle(

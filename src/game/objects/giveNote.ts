@@ -31,6 +31,11 @@ export default class giveNote extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
     }
 
+    setText(codes: string, correctId: number) {
+        this.codes = codes;
+        this.correctId = correctId;
+    }
+
     openNotebook() {
         let giveButton: Phaser.GameObjects.Text;
         const overlay = this.scene.add
