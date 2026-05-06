@@ -33,7 +33,11 @@ export default class notepad extends Phaser.GameObjects.Container {
                 0x000000,
                 0.5,
             )
-            .setDepth(1000);
+            .setInteractive()
+            .setDepth(10)
+            .on("pointerdown", () => {
+                // Swallow clicks while the popup is open
+            });
 
         // Create HTML textarea overlay
         const textarea = document.createElement("textarea");

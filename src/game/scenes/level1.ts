@@ -1,6 +1,5 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { baseLevel } from "./baselevel";
 import { setScore } from "../objects/score";
 
 import PhaserLogo from "../objects/phaser-logo";
@@ -8,6 +7,7 @@ import FpsText from "../objects/fps-text";
 import person from "../objects/person";
 import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
+import notepad from "../objects/notepad";
 
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
@@ -23,6 +23,7 @@ export class Level1 extends Scene {
     people: person[];
     currentPersonIndex: number = 0;
     notebook: notebook;
+    notepad: notepad;
     score: number = 0;
     giveNote: giveNote;
 
@@ -145,6 +146,12 @@ export class Level1 extends Scene {
             `int main() { \nint x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf("ID: %d", y); \nreturn 0; \n}`,
             this.person4.idNumber,
         ).setDepth(1);
+
+        this.notepad = new notepad(
+                    this,
+                    screenWidth / 5.2,
+                    screenHeight / 1.35,
+                ).setDepth(1);
 
         this.currentPerson.setVisible(true);
         // Do not set currentPerson as interactive
