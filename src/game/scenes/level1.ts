@@ -1,6 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { setScore } from "../objects/score";
+import { setMaxScore, setScore } from "../objects/score";
 
 import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
@@ -25,7 +25,9 @@ export class Level1 extends Scene {
     notebook: notebook;
     notepad: notepad;
     score: number = 0;
+    maxScore: number = 5;
     giveNote: giveNote;
+    currentIDCard: Phaser.GameObjects.Container;
 
     currentPerson: person;
     constructor() {
@@ -161,7 +163,7 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Back.Out",
         });
-        this.time.delayedCall(1, () => {
+        this.time.delayedCall(4000, () => {
             this.createIDCard();
         });
 
@@ -245,11 +247,13 @@ export class Level1 extends Scene {
 
     changeScene() {
         setScore(this.score);
-        this.scene.start("GameOver");
+        setMaxScore(this.maxScore);
+        this.scene.start("EndOfDay");
     }
 
     personAccepted() {
         this.input.enabled = false; // Disable input while moving offscreen
+        this.currentIDCard.destroy(); // Remove ID card when person is accepted
         if (!this.currentPerson.impostor) {
             this.score++;
         }
@@ -265,6 +269,7 @@ export class Level1 extends Scene {
 
     personRejected() {
         // Wait 3 seconds before moving offscreen to the left
+        this.currentIDCard.destroy(); // Remove ID card when person is rejected
         this.input.enabled = false; // Disable input while waiting
         if (this.currentPerson.impostor) {
             this.score++;
@@ -292,8 +297,10 @@ export class Level1 extends Scene {
                     duration: this.moveSpeed,
                     ease: "Back.Out",
                 });
-                this.createIDCard();
-                this.input.enabled = true; // Re-enable input for the next person
+                this.time.delayedCall(4000, () => {
+                    this.createIDCard();
+                    this.input.enabled = true; // Re-enable input for the next person
+                });
             } else {
                 console.log("All people processed. Final score:", this.score);
                 this.changeScene();
@@ -330,5 +337,6 @@ export class Level1 extends Scene {
             { fontSize: "14px", color: "#000" },
         );
         idCard.add([rect, nameText, codenameText, idNumberText]);
+        this.currentIDCard = idCard;
     }
 }

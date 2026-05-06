@@ -1,6 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { setScore } from "../objects/score";
+import { setMaxScore, setScore } from "../objects/score";
 
 import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
@@ -15,6 +15,7 @@ export class baseLevel extends Scene {
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
+    numberOfTasks: number;
     numberOfPeople: number;
     numberOfImpostors: number;
     people: person[];
@@ -22,19 +23,21 @@ export class baseLevel extends Scene {
     notebook: notebook;
     notepad: notepad;
     score: number = 0;
+    maxScore: number = 0;
     giveNote: giveNote;
     currentPerson: person;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
-    constructor(numberOfPeople: number, numberOfImpostors: number) {
+    constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number) {
         super("baseLevel");
         this.numberOfPeople = numberOfPeople;
         this.numberOfImpostors = numberOfImpostors;
+        this.numberOfTasks = numberOfTasks;
         this.people = [];
     }
 
     create() {
 
-
+        this.maxScore = this.numberOfTasks + this.numberOfPeople; // Max score is total number of correct decisions possible
         // Explicitly enable input on the scene
         this.input.enabled = true;
         this.currentPerson = this.people[0];
@@ -106,6 +109,7 @@ export class baseLevel extends Scene {
             screenWidth / 5.2,
             screenHeight / 1.35,
         ).setDepth(1);
+        
         // Notepad handles its own interactivity
 
         this.giveNote = new giveNote(
@@ -204,7 +208,8 @@ export class baseLevel extends Scene {
 
     changeScene() {
         setScore(this.score);
-        this.scene.start("GameOver");
+        setMaxScore(this.maxScore);
+        this.scene.start("EndOfDay");
     }
 
     personAccepted() {
