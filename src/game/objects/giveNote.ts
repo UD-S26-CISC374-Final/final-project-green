@@ -32,6 +32,11 @@ export default class giveNote extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
     }
 
+    setText(codes: string, correctId: number) {
+        this.codes = codes;
+        this.correctId = correctId;
+    }
+
     openNotebook() {
         const overlay = this.scene.add
             .rectangle(
@@ -42,7 +47,11 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 0x000000,
                 0.5,
             )
-            .setDepth(10);
+            .setInteractive()
+            .setDepth(10)
+            .on("pointerdown", () => {
+                // Swallow clicks while the popup is open
+            });
         const notebookContent = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -112,8 +121,8 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(this.giveButton);
                 this.setVisible(false);
             });
-        this.giveButton.setOrigin(0.5, 0.5).setDepth(12);
-        console.log(this.giveButton); // bug fix?
+        giveButton.setOrigin(0.5, 0.5).setDepth(12);
+        console.log(giveButton); // bug fix stuff i guess
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;

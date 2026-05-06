@@ -9,35 +9,38 @@ import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
 
-export class Level1 extends Scene {
+export class baseLevel extends Scene {
     moveSpeed: number = 9000;
-
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
-    person1: person;
-    person2: person;
-    person3: person;
-    person4: person;
+    numberOfTasks: number;
+    numberOfPeople: number;
+    numberOfImpostors: number;
     people: person[];
     currentPersonIndex: number = 0;
     notebook: notebook;
     notepad: notepad;
     score: number = 0;
-    maxScore: number = 5;
+    maxScore: number = 0;
     giveNote: giveNote;
-    currentIDCard: Phaser.GameObjects.Container;
-
     currentPerson: person;
-    constructor() {
-        super("Level1");
+    interactiveObjects: Phaser.GameObjects.GameObject[] = [];
+    constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number) {
+        super("baseLevel");
+        this.numberOfPeople = numberOfPeople;
+        this.numberOfImpostors = numberOfImpostors;
+        this.numberOfTasks = numberOfTasks;
+        this.people = [];
     }
 
     create() {
+
+        this.maxScore = this.numberOfTasks + this.numberOfPeople; // Max score is total number of correct decisions possible
         // Explicitly enable input on the scene
         this.input.enabled = true;
-        this.currentPerson = this.person1;
+        this.currentPerson = this.people[0];
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
@@ -55,77 +58,37 @@ export class Level1 extends Scene {
 
         this.fpsText = new FpsText(this);
 
-        this.person1 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            false,
-        ).setVisible(false);
-        this.person2 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            false,
-        ).setVisible(false);
-        while (
-            this.person2.characterName === this.person1.characterName ||
-            this.person2.codename === this.person1.codename ||
-            this.person2.idNumber === this.person1.idNumber
-        ) {
-            this.person2 = new person(
+        let impostornumbers: number[] = [];
+        for (let i = 0; i < this.numberOfImpostors; i++) {
+            let randomNum = Math.floor(Math.random() * this.numberOfPeople);
+            if (!impostornumbers.includes(randomNum)) {
+                impostornumbers.push(randomNum);
+            }
+        }
+        for (let i = 0; i < this.numberOfPeople; i++) {
+            const isImpostor = impostornumbers.includes(i);
+            let newPerson = new person(
                 this,
                 screenWidth / 2,
                 screenHeight / 2.75,
-                false,
+                isImpostor
             ).setVisible(false);
+            while (this.people.some((person) => person.characterName === newPerson.characterName) ||
+                   this.people.some((person) => person.codename === newPerson.codename) ||
+                   this.people.some((person) => person.idNumber === newPerson.idNumber)) {
+                const updatedPerson = new person(
+                    this,
+                    screenWidth / 2,
+                    screenHeight / 2.75,
+                    isImpostor
+                ).setVisible(false);
+                newPerson.destroy();
+                newPerson = updatedPerson;
+            }
+            this.people.push(newPerson);
         }
-        this.person3 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            true,
-        ).setVisible(false);
-        while (
-            this.person3.characterName === this.person1.characterName ||
-            this.person3.characterName === this.person2.characterName ||
-            this.person3.codename === this.person1.codename ||
-            this.person3.codename === this.person2.codename ||
-            this.person3.idNumber === this.person1.idNumber ||
-            this.person3.idNumber === this.person2.idNumber
-        ) {
-            this.person3 = new person(
-                this,
-                screenWidth / 2,
-                screenHeight / 2.75,
-                true,
-            ).setVisible(false);
-        }
-        this.person4 = new person(
-            this,
-            screenWidth / 2,
-            screenHeight / 2.75,
-            false,
-        ).setVisible(false);
-        while (
-            this.person4.characterName === this.person1.characterName ||
-            this.person4.characterName === this.person2.characterName ||
-            this.person4.characterName === this.person3.characterName ||
-            this.person4.codename === this.person1.codename ||
-            this.person4.codename === this.person2.codename ||
-            this.person4.codename === this.person3.codename ||
-            this.person4.idNumber === this.person1.idNumber ||
-            this.person4.idNumber === this.person2.idNumber ||
-            this.person4.idNumber === this.person3.idNumber
-        ) {
-            this.person4 = new person(
-                this,
-                screenWidth / 2,
-                screenHeight / 2.75,
-                false,
-            ).setVisible(false);
-        }
-        this.currentPerson = this.person1;
-        this.people = [this.person1, this.person2, this.person3, this.person4];
+        
+        this.currentPerson = this.people[0];
 
         for (const tempperson of this.people) {
             if (tempperson.impostor) {
@@ -137,23 +100,25 @@ export class Level1 extends Scene {
             this,
             screenWidth / 4,
             screenHeight / 1.35,
-            `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
+            "",
         ).setDepth(1);
         // Notebook handles its own interactivity
-        const startNumber = (this.person4.idNumber - 5) / 2;
+        
+        this.notepad = new notepad(
+            this,
+            screenWidth / 5.2,
+            screenHeight / 1.35,
+        ).setDepth(1);
+        
+        // Notepad handles its own interactivity
+
         this.giveNote = new giveNote(
             this,
             screenWidth / 1.25,
             screenHeight / 1.35,
-            `int main() { \nint x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf("ID: %d", y); \nreturn 0; \n}`,
-            this.person4.idNumber,
+            ``,
+            0,
         ).setDepth(1);
-
-        this.notepad = new notepad(
-                    this,
-                    screenWidth / 5.2,
-                    screenHeight / 1.35,
-                ).setDepth(1);
 
         this.currentPerson.setVisible(true);
         // Do not set currentPerson as interactive
@@ -163,7 +128,7 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Back.Out",
         });
-        this.time.delayedCall(4000, () => {
+        this.time.delayedCall(1, () => {
             this.createIDCard();
         });
 
@@ -232,10 +197,6 @@ export class Level1 extends Scene {
             .setDepth(1);
 
         EventBus.emit("current-scene-ready", this);
-        console.log("Person 1:", this.person1);
-        console.log("Person 2:", this.person2);
-        console.log("Person 3:", this.person3);
-        console.log("Person 4:", this.person4);
 
         //fix errors with unused variables
         console.log(tempdesk, redButton, greenButton, tempBlob);
@@ -253,7 +214,6 @@ export class Level1 extends Scene {
 
     personAccepted() {
         this.input.enabled = false; // Disable input while moving offscreen
-        this.currentIDCard.destroy(); // Remove ID card when person is accepted
         if (!this.currentPerson.impostor) {
             this.score++;
         }
@@ -269,7 +229,6 @@ export class Level1 extends Scene {
 
     personRejected() {
         // Wait 3 seconds before moving offscreen to the left
-        this.currentIDCard.destroy(); // Remove ID card when person is rejected
         this.input.enabled = false; // Disable input while waiting
         if (this.currentPerson.impostor) {
             this.score++;
@@ -297,10 +256,8 @@ export class Level1 extends Scene {
                     duration: this.moveSpeed,
                     ease: "Back.Out",
                 });
-                this.time.delayedCall(4000, () => {
-                    this.createIDCard();
-                    this.input.enabled = true; // Re-enable input for the next person
-                });
+                this.createIDCard();
+                this.input.enabled = true; // Re-enable input for the next person
             } else {
                 console.log("All people processed. Final score:", this.score);
                 this.changeScene();
@@ -337,6 +294,5 @@ export class Level1 extends Scene {
             { fontSize: "14px", color: "#000" },
         );
         idCard.add([rect, nameText, codenameText, idNumberText]);
-        this.currentIDCard = idCard;
     }
 }

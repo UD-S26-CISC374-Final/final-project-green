@@ -1,15 +1,15 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { TOTAL_SCORE, TOTAL_MAX_SCORE } from "../objects/score";
+import { SCORE, MAX_SCORE, resetScore } from "../objects/score";
 
-export class GameOver extends Scene {
+export class EndOfDay extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
-    gameOverText: Phaser.GameObjects.Text;
+    endOfDayText: Phaser.GameObjects.Text;
     scoreText: Phaser.GameObjects.Text;
 
     constructor() {
-        super("GameOver");
+        super("EndOfDay");
     }
 
     create() {
@@ -19,8 +19,8 @@ export class GameOver extends Scene {
         this.background = this.add.image(512, 384, "background");
         this.background.setAlpha(0.5);
 
-        this.gameOverText = this.add
-            .text(512, 384, "Game Over", {
+        this.endOfDayText = this.add
+            .text(512, 384, "End of Day", {
                 fontFamily: "Arial Black",
                 fontSize: 64,
                 color: "#ffffff",
@@ -32,7 +32,7 @@ export class GameOver extends Scene {
             .setDepth(100);
 
         this.scoreText = this.add
-            .text(512, 450, `Final Score: ${TOTAL_SCORE}/${TOTAL_MAX_SCORE}`, {
+            .text(512, 450, `Today's Score: ${SCORE}/${MAX_SCORE}`, {
                 fontFamily: "Arial Black",
                 fontSize: 32,
                 color: "#ffffff",
@@ -47,6 +47,7 @@ export class GameOver extends Scene {
     }
 
     changeScene() {
+        resetScore();
         this.scene.start("MainMenu");
     }
 }
