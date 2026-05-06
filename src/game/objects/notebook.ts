@@ -37,7 +37,11 @@ export default class notebook extends Phaser.GameObjects.Container {
                 0x000000,
                 0.5,
             )
-            .setDepth(10);
+            .setInteractive()
+            .setDepth(10)
+            .on("pointerdown", () => {
+                // Swallow clicks while the popup is open
+            });
         const notebookContent = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
