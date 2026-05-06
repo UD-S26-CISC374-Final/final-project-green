@@ -40,8 +40,6 @@ export default class giveNote extends Phaser.GameObjects.Container {
     openNotebook() {
         // eslint-disable-next-line prefer-const
         let closeButton: Phaser.GameObjects.Text;
-        // eslint-disable-next-line prefer-const
-        let giveButton: Phaser.GameObjects.Text;
 
         const overlay = this.scene.add
             .rectangle(
@@ -79,7 +77,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
             )
             .setOrigin(0.5, 0.5)
             .setDepth(13);
-        giveButton = this.scene.add
+        const giveButton = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2 + 100,
