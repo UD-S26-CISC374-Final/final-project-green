@@ -3,6 +3,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
     private text: Phaser.GameObjects.Text;
     private codes: string;
     private correctId: number;
+    private giveButton: Phaser.GameObjects.Text;
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -32,7 +33,6 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
-        let giveButton: Phaser.GameObjects.Text;
         const overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -81,10 +81,10 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(notebookContent);
                 this.scene.children.remove(closeButton);
                 this.scene.children.remove(codesText);
-                this.scene.children.remove(giveButton);
+                this.scene.children.remove(this.giveButton);
             });
         closeButton.setOrigin(0.5, 0.5).setDepth(12);
-        giveButton = this.scene.add
+        this.giveButton = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2 + 100,
@@ -109,11 +109,11 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(notebookContent);
                 this.scene.children.remove(closeButton);
                 this.scene.children.remove(codesText);
-                this.scene.children.remove(giveButton);
+                this.scene.children.remove(this.giveButton);
                 this.setVisible(false);
             });
-        giveButton.setOrigin(0.5, 0.5).setDepth(12);
-        console.log(giveButton); // bug fix?
+        this.giveButton.setOrigin(0.5, 0.5).setDepth(12);
+        console.log(this.giveButton); // bug fix?
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;
