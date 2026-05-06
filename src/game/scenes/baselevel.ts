@@ -27,8 +27,8 @@ export class baseLevel extends Scene {
     giveNote: giveNote;
     currentPerson: person;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
-    constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number) {
-        super("baseLevel");
+    constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
+        super(levelName);
         this.numberOfPeople = numberOfPeople;
         this.numberOfImpostors = numberOfImpostors;
         this.numberOfTasks = numberOfTasks;
@@ -36,6 +36,7 @@ export class baseLevel extends Scene {
     }
 
     create() {
+
 
         this.maxScore = this.numberOfTasks + this.numberOfPeople; // Max score is total number of correct decisions possible
         // Explicitly enable input on the scene
@@ -184,22 +185,11 @@ export class baseLevel extends Scene {
                 this.personAccepted();
             });
 
-        const tempBlob = this.add
-            .text(
-                50,
-                50,
-                "Ok so heres how the alpha version works\nThe person in front of you is supposedly one of your coworkers\nIt is your job to determine if they are telling the truth\nAs you can see they have given you their ID card\nIf you click the codes book on the left of the desk,\nit will show you a program\nIf the name on the ID card matches what the print\nstatement for the respective Codename\nat the end of the code would print,\nthe person is not an impostor\nIf the name does not match, they are an impostor\nFor impostors hit the red button and \ncoworkers hit the green button\nYou also have that note\nGive that note to the person with the ID number \nyou get from tracing the code in the note\nYeah thats it for now ok bye good luck",
-                {
-                    fontSize: "16px",
-                    color: "#000000",
-                },
-            )
-            .setDepth(1);
 
         EventBus.emit("current-scene-ready", this);
 
         //fix errors with unused variables
-        console.log(tempdesk, redButton, greenButton, tempBlob);
+        console.log(tempdesk, redButton, greenButton);
     }
 
     update() {
