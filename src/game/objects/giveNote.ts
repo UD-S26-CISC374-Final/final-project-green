@@ -38,6 +38,14 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
+<<<<<<< HEAD
+        // eslint-disable-next-line prefer-const
+        let closeButton: Phaser.GameObjects.Text;
+        // eslint-disable-next-line prefer-const
+        let giveButton: Phaser.GameObjects.Text;
+
+=======
+>>>>>>> 6f815414f3111611bbb6ff6c2bb0c68f36c9371b
         const overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -74,6 +82,9 @@ export default class giveNote extends Phaser.GameObjects.Container {
             )
             .setOrigin(0.5, 0.5)
             .setDepth(13);
+<<<<<<< HEAD
+        giveButton = this.scene.add
+=======
         const closeButton = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
@@ -94,6 +105,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
             });
         closeButton.setOrigin(0.5, 0.5).setDepth(12);
         this.giveButton = this.scene.add
+>>>>>>> 6f815414f3111611bbb6ff6c2bb0c68f36c9371b
             .text(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2 + 100,
@@ -122,7 +134,25 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.setVisible(false);
             });
         giveButton.setOrigin(0.5, 0.5).setDepth(12);
-        console.log(giveButton); // bug fix stuff i guess
+        closeButton = this.scene.add
+            .text(
+                this.scene.cameras.main.width / 2,
+                this.scene.cameras.main.height / 2 + 150,
+                "Close",
+                {
+                    fontSize: "20px",
+                    color: "#000000",
+                },
+            )
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => {
+                this.scene.children.remove(overlay);
+                this.scene.children.remove(notebookContent);
+                this.scene.children.remove(closeButton);
+                this.scene.children.remove(codesText);
+                this.scene.children.remove(giveButton);
+            });
+        closeButton.setOrigin(0.5, 0.5).setDepth(12);
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;
