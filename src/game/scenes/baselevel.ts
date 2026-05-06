@@ -58,9 +58,9 @@ export class baseLevel extends Scene {
 
         this.fpsText = new FpsText(this);
 
-        let impostornumbers: number[] = [];
+        const impostornumbers: number[] = [];
         for (let i = 0; i < this.numberOfImpostors; i++) {
-            let randomNum = Math.floor(Math.random() * this.numberOfPeople);
+            const randomNum = Math.floor(Math.random() * this.numberOfPeople);
             if (!impostornumbers.includes(randomNum)) {
                 impostornumbers.push(randomNum);
             }
