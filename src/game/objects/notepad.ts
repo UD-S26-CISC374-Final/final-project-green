@@ -20,6 +20,7 @@ export default class notepad extends Phaser.GameObjects.Container {
         this.add(this.text);
 
         this.scene.add.existing(this);
+        this.wipeNotes(); // Clear notes at the start of each game
     }
 
     openNotepad() {
@@ -88,5 +89,9 @@ export default class notepad extends Phaser.GameObjects.Container {
             document.body.removeChild(closeBtn);
         };
         document.body.appendChild(closeBtn);
+    }
+
+    wipeNotes() {
+        localStorage.removeItem(notepad.LOCAL_STORAGE_KEY);
     }
 }

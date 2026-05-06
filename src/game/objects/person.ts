@@ -1,26 +1,29 @@
 import Phaser from "phaser";
 
 const NamelistM: string[] = [
-    "John",
-    "Michael",
-    "David",
-    "James",
-    "Robert",
-    "William",
-    "Austin",
-    "Daniel",
-    "Joseph",
-    "Cory",
     "Andrew",
+    "Justin",
+    "Chase",
+    "Aiden",
+    "Austin",
+    "Carter",
+    "Chris",
+    "Matt",
+    "James",
+    "Jay",
 ];
 const NamelistF: string[] = [
-    "Mary",
-    "Jennifer",
-    "Linda",
-    "Elizabeth",
-    "Barbara",
-    "Susan",
+    "Samantha",
     "Joanna",
+    "Ellayna",
+    "Catie",
+    "Eman",
+    "Elissa",
+    "Lauren",
+    "Lily",
+    "Kheira",
+    "Macy",
+    "Monica",
 ];
 const CodenameList: string[] = [
     "Shadow",
@@ -33,6 +36,12 @@ const CodenameList: string[] = [
     "Hawk",
     "Raven",
     "Cobra",
+    "Phoenix",
+    "Crow",
+    "Sphinx",
+    "Soldier76",
+    "Reaper",
+    "Tracer",
 ];
 const Spritelist: string[] = [
     "person1",

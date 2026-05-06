@@ -5,6 +5,12 @@ import { MainMenu } from "./scenes/main-menu";
 import { AUTO, Game } from "phaser";
 import { Preloader } from "./scenes/preloader";
 import { EndOfDay } from "./scenes/endofday";
+import { Level5 } from "./scenes/level5";
+import { Level4 } from "./scenes/level4";
+import { Level3 } from "./scenes/level3";
+import { Level2 } from "./scenes/level2";
+import { Credits } from "./scenes/credits";
+import { LevelSelect } from "./scenes/levelselect";
 
 //  Find out more information about the Game Config at:
 //  https://docs.phaser.io/api-documentation/typedef/types-core#gameconfig
@@ -14,7 +20,7 @@ const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
     parent: "game-container",
     backgroundColor: "#ffffff",
-    scene: [Boot, Preloader, MainMenu, MainGame, GameOver, EndOfDay],
+    scene: [Boot, Preloader, MainMenu, MainGame, GameOver, EndOfDay, Level2, Level3, Level4, Level5, Credits, LevelSelect],
     scale: {
         parent: "phaser-game",
         mode: Phaser.Scale.FIT,
