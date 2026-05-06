@@ -5,77 +5,71 @@ import type { ChangeableScene } from "../reactable-scene";
 
 export class MainMenu extends Scene implements ChangeableScene {
     background: GameObjects.Image;
-    logo: GameObjects.Image;
-    title: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
 
     constructor() {
         super("MainMenu");
     }
 
     create() {
-        this.background = this.add.image(512, 384, "background");
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
 
-        this.logo = this.add.image(512, 300, "logo").setDepth(100);
+        this.background = this.add
+            .image(centerX, centerY, "background")
+            .setOrigin(0.5);
 
-        this.title = this.add
-            .text(512, 460, "Start Game", {
-                fontFamily: "Arial Black",
-                fontSize: 38,
-                color: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 8,
-                align: "center",
-            })
+        const menuOptions = [
+            { label: "Start Game", scene: "Level1" },
+            { label: "Level Select", scene: "LevelSelect" },
+            { label: "Credits", scene: "Credits" },
+        ];
 
-        const padding = 20;
-        this.add
-            .rectangle(512, 460, this.title.width + padding * 2, this.title.height + padding * 2)
-            .setStrokeStyle(3, 0xffffff)
-            .setFillStyle(0x000000, 0.3) // Semi-transparent black fill
-            .setDepth(99) // Behind the text
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => this.changeScene());
+        const startY = centerY - 80;
+        const spacing = 90;
 
-        this.title
-            .setOrigin(0.5)
-            .setDepth(100)
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => this.changeScene());
+        menuOptions.forEach((option, index) => {
+            const y = startY + index * spacing;
+            const buttonText = this.add
+                .text(centerX, y, option.label, {
+                    fontFamily: "Arial Black",
+                    fontSize: "34px",
+                    color: "#ffffff",
+                    stroke: "#000000",
+                    strokeThickness: 8,
+                })
+                .setOrigin(0.5)
+                .setDepth(2)
+                .setInteractive({ useHandCursor: true });
+
+            const buttonBg = this.add
+                .rectangle(
+                    centerX,
+                    y,
+                    buttonText.width + 80,
+                    buttonText.height + 30,
+                    0x000000,
+                    0.6,
+                )
+                .setStrokeStyle(3, 0xffffff)
+                .setDepth(1)
+                .setInteractive({ useHandCursor: true });
+
+            const activateButton = () => this.scene.start(option.scene);
+            [buttonBg, buttonText].forEach((obj) => {
+                obj.on("pointerdown", activateButton);
+                obj.on("pointerover", () =>
+                    buttonBg.setFillStyle(0xffffff, 0.2),
+                );
+                obj.on("pointerout", () =>
+                    buttonBg.setFillStyle(0x000000, 0.6),
+                );
+            });
+        });
 
         EventBus.emit("current-scene-ready", this);
     }
 
     changeScene() {
-        if (this.logoTween) {
-            this.logoTween.stop();
-            this.logoTween = null;
-        }
-
         this.scene.start("Level1");
-    }
-
-    moveSprite(callback: ({ x, y }: { x: number; y: number }) => void) {
-        if (this.logoTween) {
-            if (this.logoTween.isPlaying()) {
-                this.logoTween.pause();
-            } else {
-                this.logoTween.play();
-            }
-        } else {
-            this.logoTween = this.tweens.add({
-                targets: this.logo,
-                x: { value: 750, duration: 3000, ease: "Back.easeInOut" },
-                y: { value: 80, duration: 1500, ease: "Sine.easeOut" },
-                yoyo: true,
-                repeat: -1,
-                onUpdate: () => {
-                    callback({
-                        x: Math.floor(this.logo.x),
-                        y: Math.floor(this.logo.y),
-                    });
-                },
-            });
-        }
     }
 }

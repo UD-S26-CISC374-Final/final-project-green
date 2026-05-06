@@ -3,6 +3,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
     private text: Phaser.GameObjects.Text;
     private codes: string;
     private correctId: number;
+    private giveButton: Phaser.GameObjects.Text;
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -37,11 +38,14 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
+<<<<<<< HEAD
         // eslint-disable-next-line prefer-const
         let closeButton: Phaser.GameObjects.Text;
         // eslint-disable-next-line prefer-const
         let giveButton: Phaser.GameObjects.Text;
 
+=======
+>>>>>>> 6f815414f3111611bbb6ff6c2bb0c68f36c9371b
         const overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -78,7 +82,30 @@ export default class giveNote extends Phaser.GameObjects.Container {
             )
             .setOrigin(0.5, 0.5)
             .setDepth(13);
+<<<<<<< HEAD
         giveButton = this.scene.add
+=======
+        const closeButton = this.scene.add
+            .text(
+                this.scene.cameras.main.width / 2,
+                this.scene.cameras.main.height / 2 + 150,
+                "Close",
+                {
+                    fontSize: "20px",
+                    color: "#000000",
+                },
+            )
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => {
+                this.scene.children.remove(overlay);
+                this.scene.children.remove(notebookContent);
+                this.scene.children.remove(closeButton);
+                this.scene.children.remove(codesText);
+                this.scene.children.remove(this.giveButton);
+            });
+        closeButton.setOrigin(0.5, 0.5).setDepth(12);
+        this.giveButton = this.scene.add
+>>>>>>> 6f815414f3111611bbb6ff6c2bb0c68f36c9371b
             .text(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2 + 100,
@@ -103,7 +130,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(notebookContent);
                 this.scene.children.remove(closeButton);
                 this.scene.children.remove(codesText);
-                this.scene.children.remove(giveButton);
+                this.scene.children.remove(this.giveButton);
                 this.setVisible(false);
             });
         giveButton.setOrigin(0.5, 0.5).setDepth(12);
