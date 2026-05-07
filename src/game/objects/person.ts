@@ -67,19 +67,26 @@ export default class person extends Phaser.GameObjects.Sprite {
     idNumber: number;
     fakeCodename: string = "";
     impostor: boolean;
-    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean) {
+    boss: boolean;
+    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean, boss: boolean = false) {
         const randomIndex = Math.floor(Math.random() * Spritelist.length);
         const texture = Spritelist[randomIndex];
-        super(scene, x, y, texture);
-        this.characterName =
-            randomIndex < 6 ?
-                NamelistF[Math.floor(Math.random() * NamelistF.length)]
-            :   NamelistM[Math.floor(Math.random() * NamelistM.length)];
-        this.codename =
-            CodenameList[Math.floor(Math.random() * CodenameList.length)];
-        this.idNumber = Math.floor(Math.random() * 1000);
-        // Ensure fakeCodename is not the same as codename
-        this.impostor = impostor;
+        if (boss) {
+            super(scene, x, y, "tempboss");
+        } else {
+            super(scene, x, y, texture);
+        
+            this.characterName =
+                randomIndex < 6 ?
+                    NamelistF[Math.floor(Math.random() * NamelistF.length)]
+                :   NamelistM[Math.floor(Math.random() * NamelistM.length)];
+            this.codename =
+                CodenameList[Math.floor(Math.random() * CodenameList.length)];
+            this.idNumber = Math.floor(Math.random() * 1000);
+        
+            this.impostor = impostor;
+        }
+        this.boss = boss;
         scene.add.existing(this);
     }
     setFakeCodenameFromPool(pool: person[]) {

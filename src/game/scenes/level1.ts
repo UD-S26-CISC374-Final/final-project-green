@@ -24,6 +24,7 @@ export class Level1 extends Scene {
     person3: person;
     person4: person;
     people: person[];
+    boss: person;
     currentPersonIndex: number = 0;
     notebook: notebook;
     notepad: notepad;
@@ -32,6 +33,7 @@ export class Level1 extends Scene {
     giveNote: giveNote;
     currentIDCard: id;
     skipButton: Phaser.GameObjects.Text;
+    bossTimeCount: number = 0;
 
     currentPerson: person;
     constructor() {
@@ -41,7 +43,6 @@ export class Level1 extends Scene {
     create() {
         // Explicitly enable input on the scene
         this.input.enabled = true;
-        this.currentPerson = this.person1;
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
@@ -64,6 +65,8 @@ export class Level1 extends Scene {
         ).setScale(0.75).setDepth(0.99);
 
         this.fpsText = new FpsText(this);
+
+        this.boss = new person(this, screenWidth + 300, screenHeight / 2.75, false, true).setVisible(false).setDepth(0.51).setScale(0.5);   
 
         this.person1 = new person(
             this,
@@ -134,7 +137,6 @@ export class Level1 extends Scene {
                 false,
             ).setVisible(false).setDepth(0.51);
         }
-        this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
 
         for (const tempperson of this.people) {
@@ -179,19 +181,7 @@ export class Level1 extends Scene {
                     screenHeight / 1.35,
                 ).setDepth(1);
 
-        this.currentPerson.setVisible(true);
-        // Do not set currentPerson as interactive
-        this.tweens.add({
-            targets: this.currentPerson,
-            scale: 3,
-            duration: this.moveSpeed,
-            ease: "Back.Out",
-        });
-        this.time.delayedCall(4000, () => {
-            this.createIDCard();
-        });
-
-        // Add a rectangle that fills the bottom half of the screen
+        
 
         this.skipButton = this.add
             .text(screenWidth - 100, 20, "Skip", {
@@ -274,6 +264,8 @@ export class Level1 extends Scene {
 
         //fix errors with unused variables
         console.log(tempdesk, redButton, greenButton);
+
+        this.bossTime();
     }
 
     update() {
@@ -373,5 +365,22 @@ export class Level1 extends Scene {
             this.currentPerson.idNumber.toString(),
         );
         this.currentIDCard.setDepth(1);
+    }
+
+    bossTime() {
+        this.input.enabled = false; // Disable input during boss sequence
+        this.boss.setVisible(false);
+        this.boss.setVisible(true);
+        this.tweens.add({
+            x: this.cameras.main.width / 1.33,
+            targets: this.boss,
+            duration: this.moveSpeed,
+        });
+        this.time.delayedCall(this.moveSpeed, () => {
+            if (this.bossTimeCount === 0) {
+
+            }
+            this.bossTimeCount++;
+        });
     }
 }
