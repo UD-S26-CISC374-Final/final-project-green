@@ -25,7 +25,7 @@ export class Level1 extends Scene {
     person4: person;
     people: person[];
     boss: person;
-    currentPersonIndex: number = 0;
+    currentPersonIndex: number = -1;
     notebook: notebook;
     notepad: notepad;
     score: number = 0;
@@ -34,6 +34,8 @@ export class Level1 extends Scene {
     currentIDCard: id;
     skipButton: Phaser.GameObjects.Text;
     bossTimeCount: number = 0;
+    bossChat: Phaser.GameObjects.Container;
+    bossText: Phaser.GameObjects.Text;
 
     currentPerson: person;
     constructor() {
@@ -52,7 +54,7 @@ export class Level1 extends Scene {
         this.background = this.add.image(
             screenWidth / 2,
             screenHeight / 2,
-            "desk+background",
+            "backgroundnodesk",
         );
         this.background.displayWidth = screenWidth;
         this.background.displayHeight = screenHeight;
@@ -67,6 +69,7 @@ export class Level1 extends Scene {
         this.fpsText = new FpsText(this);
 
         this.boss = new person(this, screenWidth + 300, screenHeight / 2.75, false, true).setVisible(false).setDepth(0.51).setScale(0.5);   
+            
 
         this.person1 = new person(
             this,
@@ -265,6 +268,25 @@ export class Level1 extends Scene {
         //fix errors with unused variables
         console.log(tempdesk, redButton, greenButton);
 
+        this.bossChat = this.add
+        .container(this.cameras.main.width / 1.75, this.cameras.main.height / 5)
+        .setDepth(1)
+        .setVisible(false);
+        const bossTextBackground = this.add
+        .rectangle(0, 0, 400, 100, 0xffffff)
+        .setStrokeStyle(3, 0x000000);
+        this.bossText = this.add.text(-180, -40, "Hey! Welcome to your first day on the job!", {
+            fontSize: "18px",
+            color: "#000000",
+            wordWrap: { width: 350 },
+        });
+        this.bossChat.add([bossTextBackground, this.bossText]);
+
+        this.boss.setInteractive({ useHandCursor: true });
+        this.boss.on("pointerdown", () => {
+            this.bossChat.setVisible(!this.bossChat.visible);
+        });
+
         this.bossTime();
     }
 
@@ -291,7 +313,14 @@ export class Level1 extends Scene {
             duration: this.moveSpeed,
             ease: "Power2",
         });
-        this.nextPerson();
+        
+        if (this.bossTimeCount === 1) {
+            this.time.delayedCall(this.moveSpeed, () => {
+                this.bossTime();
+            });
+        } else {
+            this.nextPerson();
+        }
     }
 
     personRejected() {
@@ -329,7 +358,11 @@ export class Level1 extends Scene {
                     y: this.cameras.main.height / 3,
                     duration: this.moveSpeed,
                 });
-                this.nextPerson();
+                if (this.bossTimeCount === 1) {
+                    this.bossTime();
+                } else {
+                    this.nextPerson();
+                }
             });
         });
     }
@@ -369,18 +402,40 @@ export class Level1 extends Scene {
 
     bossTime() {
         this.input.enabled = false; // Disable input during boss sequence
-        this.boss.setVisible(false);
         this.boss.setVisible(true);
-        this.tweens.add({
-            x: this.cameras.main.width / 1.33,
-            targets: this.boss,
-            duration: this.moveSpeed,
-        });
-        this.time.delayedCall(this.moveSpeed, () => {
-            if (this.bossTimeCount === 0) {
+        if (this.bossTimeCount === 0) {
+            this.tweens.add({
+                x: this.cameras.main.width / 1.33,
+                targets: this.boss,
+                duration: this.moveSpeed,
+            });
+            this.time.delayedCall(this.moveSpeed, () => {
+                this.bossChat.setVisible(true);
+                this.time.delayedCall(5000, () => {
+                    this.bossText.setText("Don't worry, I'll be here to help you out through your first day. Just follow my instructions and you'll do great!");
+                    this.time.delayedCall(5000, () => {
+                        this.bossText.setText("Oh, and if you ever forget anything I tell you go ahead and give me a pat on the shoulder, I'll repeat it for you.")
+                        this.time.delayedCall(5000, () => {
+                            this.bossText.setText("Alright, let's get started with the first person.");
+                            this.time.delayedCall(5000, () => {
+                                this.bossChat.setVisible(false);
+                                this.bossTimeCount++;
+                                this.nextPerson();
+                            });
+                        });
+                    });
+                });                
+            });
 
-            }
-            this.bossTimeCount++;
-        });
+        }
+        else if (this.bossTimeCount === 1) {
+            this.bossText.setText("Boss: Let's see how you handle this next one...");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(3000, () => {
+                this.bossChat.setVisible(false);
+                this.bossTimeCount++;
+                this.nextPerson();
+            });
+        }
     }
 }

@@ -39,7 +39,7 @@ const CodenameList: string[] = [
     "Phoenix",
     "Crow",
     "Sphinx",
-    "Soldier76",
+    "Soldier",
     "Reaper",
     "Tracer",
 ];
