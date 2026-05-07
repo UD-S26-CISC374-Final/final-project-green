@@ -7,6 +7,6 @@ export class Level3 extends baseLevel {
     }
     create(): void {
             super.create();
-            this.notebook.setText(random3Code());
+            this.notebook.setText(random3Code(this.people));
         }
 }
