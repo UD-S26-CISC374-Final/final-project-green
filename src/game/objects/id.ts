@@ -5,6 +5,7 @@ export default class id extends Phaser.GameObjects.Container {
     private nameText: Phaser.GameObjects.Text;
     private codenameText: Phaser.GameObjects.Text;
     private idNumberText: Phaser.GameObjects.Text;
+    private emitted: boolean;
 
     constructor(
         scene: Phaser.Scene,
@@ -13,9 +14,10 @@ export default class id extends Phaser.GameObjects.Container {
         name: string = "Name",
         codename: string = "Codename",
         idNumber: string = "ID#",
+        emitted: boolean = true,
     ) {
         super(scene, x, y);
-
+        this.emitted = emitted;
         // ID card background image
         this.cardBg = scene.add
             .image(0, 0, "id-card")
@@ -75,7 +77,14 @@ export default class id extends Phaser.GameObjects.Container {
         // Semi-transparent background
         const bg = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height, 0x000000, 0.7);
         bg.setInteractive();
-        bg.on('pointerdown', () => overlay.destroy());
+        bg.on('pointerdown', () => {
+            if (!this.emitted) {
+                console.log("Emitting closeIDCard event");
+                this.scene.events.emit('closeIDCard');
+                this.emitted = true;
+            }
+            overlay.destroy();
+        });
         
         // Enlarged ID card
         const largeCard = this.scene.add.image(0, 0, "id-card").setDisplaySize(360, 220);

@@ -4,15 +4,18 @@ export default class giveNote extends Phaser.GameObjects.Container {
     private codes: string;
     private correctId: number;
     private giveButton: Phaser.GameObjects.Text;
+    private emitted: boolean;
     constructor(
         scene: Phaser.Scene,
         x: number,
         y: number,
         codes: string = "",
         correctId: number,
+        emitted: boolean = true,
     ) {
         super(scene, x, y);
         this.codes = codes;
+        this.emitted = emitted;
         this.correctId = correctId;
         this.rect = this.scene.add
             .rectangle(0, 0, 50, 50, 0xffffff)
@@ -118,11 +121,17 @@ export default class giveNote extends Phaser.GameObjects.Container {
             )
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
+                if (!this.emitted) {
+                    console.log("emitting closeGiveNote");
+                    this.scene.events.emit('closeGiveNote');
+                    this.emitted = true;
+                }
                 this.scene.children.remove(overlay);
                 this.scene.children.remove(notebookContent);
                 this.scene.children.remove(closeButton);
                 this.scene.children.remove(codesText);
                 this.scene.children.remove(giveButton);
+                
             });
         closeButton.setOrigin(0.5, 0.5).setDepth(12);
     }

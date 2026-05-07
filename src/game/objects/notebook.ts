@@ -2,9 +2,11 @@ export default class notebook extends Phaser.GameObjects.Container {
     public rect: Phaser.GameObjects.Rectangle;
     private text: Phaser.GameObjects.Text;
     private codes: string;
-    constructor(scene: Phaser.Scene, x: number, y: number, codes: string = "") {
+    private emitted: boolean;
+    constructor(scene: Phaser.Scene, x: number, y: number, codes: string = "", emitted: boolean = true) {
         super(scene, x, y);
         this.codes = codes;
+        this.emitted = emitted;
         this.rect = this.scene.add
             .rectangle(0, 0, 75, 100, 0xffffff)
             .setStrokeStyle(2, 0x000000)
@@ -184,6 +186,11 @@ export default class notebook extends Phaser.GameObjects.Container {
         };
 
         closeBtn.onclick = () => {
+            if (!this.emitted) {
+                console.log("Emitting closeNotebook event");
+                this.scene.events.emit('closeNotebook');
+                this.emitted = true;
+            }
             this.scene.children.remove(overlay);
             this.scene.children.remove(notebookContent);
             this.scene.children.remove(codesText);

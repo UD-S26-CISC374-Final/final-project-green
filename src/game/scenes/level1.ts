@@ -167,6 +167,7 @@ export class Level1 extends Scene {
             screenWidth / 4,
             screenHeight / 1.35,
             `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\n\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\n\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
+            false,
         ).setDepth(1);
         // Notebook handles its own interactivity
         const startNumber = (this.person4.idNumber - 5) / 2;
@@ -176,12 +177,14 @@ export class Level1 extends Scene {
             screenHeight / 1.35,
             `int main() { \nint x = ${startNumber}; \nx = x + 2; \ny = x; \ny = y - 1; \nx = y * 2; \ny = x + 3; \nprintf("ID: %d", y); \nreturn 0; \n}`,
             this.person4.idNumber,
-        ).setDepth(1);
+            false,
+        ).setDepth(1).setVisible(false);
 
         this.notepad = new notepad(
                     this,
                     screenWidth / 5.2,
                     screenHeight / 1.35,
+                    false,
                 ).setDepth(1);
 
         
@@ -286,12 +289,31 @@ export class Level1 extends Scene {
         this.boss.on("pointerdown", () => {
             this.bossChat.setVisible(!this.bossChat.visible);
         });
+        this.events.once("closeIDCard", () => {
+                console.log("closeIDCard event received, calling bossTime");
+                this.bossTime();
+            });
+        
+            this.events.once("closeNotebook", () => {
+                console.log("closeNotebook event received, calling bossTime");
+                this.bossTime();
+            });
+        
+            this.events.once("closeNotepad", () => {
+                console.log("closeNotepad event received, calling bossTime");
+                this.bossTime();
+            });
+        
+            this.events.once("closeGiveNote", () => {
+                console.log("closeGiveNote event received, calling bossTime");
+                this.bossTime();
+            });
 
         this.bossTime();
     }
 
     update() {
-        this.fpsText.update();
+    
     }
 
     changeScene() {
@@ -314,7 +336,7 @@ export class Level1 extends Scene {
             ease: "Power2",
         });
         
-        if (this.bossTimeCount === 1) {
+        if (this.bossTimeCount === 1 || this.bossTimeCount === 5 || this.bossTimeCount === 6 || this.bossTimeCount === 8 || this.bossTimeCount === 9) {
             this.time.delayedCall(this.moveSpeed, () => {
                 this.bossTime();
             });
@@ -358,8 +380,10 @@ export class Level1 extends Scene {
                     y: this.cameras.main.height / 3,
                     duration: this.moveSpeed,
                 });
-                if (this.bossTimeCount === 1) {
-                    this.bossTime();
+                if (this.bossTimeCount === 1 || this.bossTimeCount === 5 || this.bossTimeCount === 6 || this.bossTimeCount === 8 || this.bossTimeCount === 9) {
+                    this.time.delayedCall(2000, () => {
+                        this.bossTime();
+                    });
                 } else {
                     this.nextPerson();
                 }
@@ -381,6 +405,9 @@ export class Level1 extends Scene {
                 this.time.delayedCall(4000, () => {
                     this.createIDCard();
                     this.input.enabled = true; // Re-enable input for the next person
+                    if(this.bossTimeCount === 1) {
+                        this.bossTime();
+                    }
                 });
             } else {
                 console.log("All people processed. Final score:", this.score);
@@ -396,11 +423,13 @@ export class Level1 extends Scene {
             this.currentPerson.characterName,
             this.currentPerson.impostor ? this.currentPerson.fakeCodename : this.currentPerson.codename,
             this.currentPerson.idNumber.toString(),
+            !(this.currentPerson === this.person1),
         );
         this.currentIDCard.setDepth(1);
     }
 
     bossTime() {
+        console.log("Boss time called, bossTimeCount:", this.bossTimeCount);
         this.input.enabled = false; // Disable input during boss sequence
         this.boss.setVisible(true);
         if (this.bossTimeCount === 0) {
@@ -429,12 +458,142 @@ export class Level1 extends Scene {
 
         }
         else if (this.bossTimeCount === 1) {
-            this.bossText.setText("Boss: Let's see how you handle this next one...");
+            this.bossText.setText("This is one of your coworkers, make sure to greet them so you're not an ass.");
             this.bossChat.setVisible(true);
-            this.time.delayedCall(3000, () => {
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("There is their ID card, go ahead and click it so you can read it better.");
+                this.time.delayedCall(5000, () => {
+                    this.bossChat.setVisible(false);
+                    this.input.enabled = true;
+                    this.bossTimeCount++;
+                });
+            });
+        }
+        else if (this.bossTimeCount === 2) {
+            this.bossText.setText(`Ah, so this is ${this.currentPerson.characterName}, or as we call them, ${this.currentPerson.codename}.`);
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("In order to deduce whether or not they are who they say they are, we will have to trace today's code.");
+                this.time.delayedCall(5000, () => {
+                    this.bossText.setText("Go ahead and click on today's code to take a peek at it.");
+                    this.time.delayedCall(5000, () => {
+                        this.bossChat.setVisible(false);
+                        this.input.enabled = true;
+                        this.bossTimeCount++;
+                    });
+                });
+            });
+        }
+        else if (this.bossTimeCount === 3) {
+            this.bossText.setText("Now we have to trace that code to see if his codename on his ID matches what would be printed by the respective print statement in the code.");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("If you want to take notes at all, there is a notepad on the left you can click to jot down any thoughts you have.");
+                this.time.delayedCall(5000, () => {
+                    this.bossText.setText("Why dont you try jotting down a little something in there to see how it works?");
+                    this.time.delayedCall(5000, () => {
+                        this.bossChat.setVisible(false);
+                        this.input.enabled = true;
+                        this.bossTimeCount++;
+                    });
+                });
+            });
+        }
+        else if (this.bossTimeCount === 4) {
+            this.bossText.setText("Once you think you have figured out whether or not they are an impostor, go ahead and hit one of the two buttons on the desk.");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("The green button means the ID and code match, so they are a coworker, and the red button means they don't, and are an impostor.");
+                this.time.delayedCall(5000, () => {
+                    this.bossChat.setVisible(false);
+                    this.input.enabled = true;
+                    this.bossTimeCount++;
+                });
+            });
+        }
+        else if (this.bossTimeCount === 5) {
+            this.bossText.setText("Nice job! You're a natural at this! Just keep doing what you're doing and you'll do great!");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText('*ring ring*');
+                this.time.delayedCall(3000, () => {
+                    this.bossText.setText("Oh, sorry, I'm getting a call. Here, let me take this and you check in the next person.");
+                    this.time.delayedCall(5000, () => {
+                        this.bossChat.setVisible(false);
+                        this.tweens.add({
+                            x: this.cameras.main.width + 300,
+                            targets: this.boss,
+                        });
+                        this.bossTimeCount++;
+                        this.nextPerson();
+                    });
+                });
+            });
+        }
+        else if (this.bossTimeCount === 6) {
+            this.tweens.add({
+                x: this.cameras.main.width / 1.33,
+                targets: this.boss,
+                duration: this.moveSpeed,
+            });
+            this.time.delayedCall(this.moveSpeed, () => {
+                this.bossText.setText("Hey, great job! Sorry about stepping out like that.")
+                this.bossChat.setVisible(true);
+                this.time.delayedCall(5000, () => {
+                    this.bossText.setText("But here, take this secret note that I had to go get.")
+                    this.giveNote.setVisible(true);
+                    this.time.delayedCall(5000, () => {
+                        this.bossText.setText("Typically I would give you this at the start of the day if I have one.")
+                        this.time.delayedCall(5000, () => {
+                            this.bossText.setText("The note has code on it that when traced will give you the ID number of one of the people you're checking in.");
+                            this.time.delayedCall(5000, () => {
+                                this.bossText.setText("You can give the note to the respective person by clicking on the note and then clicking the give note button.")
+                                this.time.delayedCall(5000, () => {
+                                    this.bossChat.setVisible(false);
+                                    this.input.enabled = true;
+                                    this.bossTimeCount++;
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        }
+        else if (this.bossTimeCount === 7) {
+            this.bossText.setText("Alright, I think it's about time for the next person. Just go ahead and check them in like normal.");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
                 this.bossChat.setVisible(false);
-                this.bossTimeCount++;
                 this.nextPerson();
+                this.bossTimeCount++;
+            });
+        }
+        else if (this.bossTimeCount === 8) {
+            this.bossText.setText("Seems like you got the hang of this pretty well! You're doing a great job, keep it up!");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("One more person to check in, then we can go home and play Overwatch... I mean uhhhhh... sleep...");
+                this.time.delayedCall(5000, () => {
+                    this.bossChat.setVisible(false);
+                    this.nextPerson();
+                    this.bossTimeCount++;
+                });
+            });
+        }
+        else if (this.bossTimeCount === 9) {
+            this.bossText.setText("Hey, great job today! You're a natural at this, I'm sure you'll be promoted in no time!");
+            this.bossChat.setVisible(true);
+            this.time.delayedCall(5000, () => {
+                this.bossText.setText("Alright, go home and get some rest, I'll see you bright and early tomorrow. I hear Dan is bringing donuts!");
+                this.time.delayedCall(5000, () => {
+                    this.bossChat.setVisible(false);
+                    this.tweens.add({
+                        x: this.cameras.main.width + 300,
+                        targets: this.boss,
+                        duration: this.moveSpeed,
+                    });
+                    this.changeScene();
+                });
             });
         }
     }

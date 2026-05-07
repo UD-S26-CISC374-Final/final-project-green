@@ -2,8 +2,10 @@ export default class notepad extends Phaser.GameObjects.Container {
     public rect: Phaser.GameObjects.Rectangle;
     private text: Phaser.GameObjects.Text;
     private static LOCAL_STORAGE_KEY = "player_notepad_notes";
-    constructor(scene: Phaser.Scene, x: number, y: number) {
+    private emitted: boolean;
+    constructor(scene: Phaser.Scene, x: number, y: number, emitted: boolean = true) {
         super(scene, x, y);
+        this.emitted = emitted;
         this.rect = this.scene.add
             .rectangle(0, 0, 75, 100, 0xffffff)
             .setStrokeStyle(2, 0x000000)
@@ -84,6 +86,11 @@ export default class notepad extends Phaser.GameObjects.Container {
         closeBtn.style.cursor = "pointer";
 
         closeBtn.onclick = () => {
+            if (!this.emitted) {
+                console.log("Emitting closeNotepad event");
+                this.scene.events.emit('closeNotepad');
+                this.emitted = true;
+            }
             this.scene.children.remove(overlay);
             document.body.removeChild(textarea);
             document.body.removeChild(closeBtn);
