@@ -11,12 +11,13 @@ import notepad from "../objects/notepad";
 import id from "../objects/id";
 
 export class Level1 extends Scene {
-    moveSpeed: number = 9000;
+    moveSpeed: number = 5000;
 
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
+    guards: Phaser.GameObjects.Group;
     person1: person;
     person2: person;
     person3: person;
@@ -29,6 +30,7 @@ export class Level1 extends Scene {
     maxScore: number = 5;
     giveNote: giveNote;
     currentIDCard: id;
+    skipButton: Phaser.GameObjects.Text;
 
     currentPerson: person;
     constructor() {
@@ -61,13 +63,13 @@ export class Level1 extends Scene {
             screenWidth / 2,
             screenHeight / 2.75,
             false,
-        ).setVisible(false);
+        ).setVisible(false).setDepth(0.51);
         this.person2 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
             false,
-        ).setVisible(false);
+        ).setVisible(false).setDepth(0.51);
         while (
             this.person2.characterName === this.person1.characterName ||
             this.person2.codename === this.person1.codename ||
@@ -78,14 +80,14 @@ export class Level1 extends Scene {
                 screenWidth / 2,
                 screenHeight / 2.75,
                 false,
-            ).setVisible(false);
+            ).setVisible(false).setDepth(0.51);
         }
         this.person3 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
             true,
-        ).setVisible(false);
+        ).setVisible(false).setDepth(0.51);
         while (
             this.person3.characterName === this.person1.characterName ||
             this.person3.characterName === this.person2.characterName ||
@@ -99,14 +101,14 @@ export class Level1 extends Scene {
                 screenWidth / 2,
                 screenHeight / 2.75,
                 true,
-            ).setVisible(false);
+            ).setVisible(false).setDepth(0.51);
         }
         this.person4 = new person(
             this,
             screenWidth / 2,
             screenHeight / 2.75,
             false,
-        ).setVisible(false);
+        ).setVisible(false).setDepth(0.51);
         while (
             this.person4.characterName === this.person1.characterName ||
             this.person4.characterName === this.person2.characterName ||
@@ -123,7 +125,7 @@ export class Level1 extends Scene {
                 screenWidth / 2,
                 screenHeight / 2.75,
                 false,
-            ).setVisible(false);
+            ).setVisible(false).setDepth(0.51);
         }
         this.currentPerson = this.person1;
         this.people = [this.person1, this.person2, this.person3, this.person4];
@@ -133,7 +135,21 @@ export class Level1 extends Scene {
                 tempperson.setFakeCodenameFromPool(this.people);
             }
         }
-
+        this.guards = this.add.group();
+        const guardPositions = [
+            screenWidth * 0.175,
+            screenWidth * 0.325,
+            screenWidth * 0.65,
+            screenWidth * 0.8
+        ];
+        for (let i = 0; i < 4; i++) {
+            const guard = this.add.image(
+                guardPositions[i],
+                screenHeight / 3, // Near the top/back wall
+                "bodyguard"
+            ).setScale(0.5).setDepth(0.5);
+            this.guards.add(guard);
+        }
         this.notebook = new notebook(
             this,
             screenWidth / 4,
@@ -170,7 +186,7 @@ export class Level1 extends Scene {
 
         // Add a rectangle that fills the bottom half of the screen
 
-        const skipButton = this.add
+        this.skipButton = this.add
             .text(screenWidth - 100, 20, "Skip", {
                 fontSize: "24px",
                 color: "#000000",
@@ -231,7 +247,7 @@ export class Level1 extends Scene {
                 this.personAccepted();
             });
 
-        const tempBlob = this.add
+        /*const tempBlob = this.add
             .text(
                 50,
                 50,
@@ -242,7 +258,7 @@ export class Level1 extends Scene {
                 },
             )
             .setDepth(1);
-
+            */
         EventBus.emit("current-scene-ready", this);
         console.log("Person 1:", this.person1);
         console.log("Person 2:", this.person2);
@@ -250,7 +266,7 @@ export class Level1 extends Scene {
         console.log("Person 4:", this.person4);
 
         //fix errors with unused variables
-        console.log(tempdesk, redButton, greenButton, tempBlob);
+        console.log(tempdesk, redButton, greenButton);
     }
 
     update() {
@@ -286,15 +302,36 @@ export class Level1 extends Scene {
         if (this.currentPerson.impostor) {
             this.score++;
         }
+        this.tweens.add({
+            targets: [this.guards.getChildren()[1], this.guards.getChildren()[2]], // Middle guards react to rejections
+            scale: 0.75,
+            y: this.currentPerson.y + 20,
+            duration: 1500,
+        });
         this.time.delayedCall(3000, () => {
             this.tweens.add({
-                targets: this.currentPerson,
+                targets: [this.currentPerson, this.guards.getChildren()[1], this.guards.getChildren()[2]], // Move person and middle guards off-screen
                 x: -200, // Move offscreen to the left
                 y: this.currentPerson.y,
                 duration: this.moveSpeed,
-                ease: "Power2",
             });
-            this.nextPerson();
+            this.time.delayedCall(this.moveSpeed+1000, () => {
+                this.tweens.add({
+                    targets: this.guards.getChildren()[2], // Move middle guards back to original position
+                    scale: 0.5,
+                    x: this.cameras.main.width * 0.65,
+                    y: this.cameras.main.height / 3,
+                    duration: this.moveSpeed,
+                });
+                this.tweens.add({
+                    targets: this.guards.getChildren()[1],
+                    scale: 0.5,
+                    x: this.cameras.main.width * 0.325,
+                    y: this.cameras.main.height / 3,
+                    duration: this.moveSpeed,
+                });
+                this.nextPerson();
+            });
         });
     }
     nextPerson() {

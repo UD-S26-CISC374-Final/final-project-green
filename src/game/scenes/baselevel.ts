@@ -11,7 +11,7 @@ import notepad from "../objects/notepad";
 import id from "../objects/id";
 
 export class baseLevel extends Scene {
-    moveSpeed: number = 9000;
+    moveSpeed: number = 5000;
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
@@ -28,6 +28,8 @@ export class baseLevel extends Scene {
     giveNote: giveNote;
     currentPerson: person;
     currentIDCard: id;
+    skipButton: Phaser.GameObjects.Text;
+    guards: Phaser.GameObjects.Group;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
@@ -75,7 +77,7 @@ export class baseLevel extends Scene {
                 screenWidth / 2,
                 screenHeight / 2.75,
                 isImpostor
-            ).setVisible(false);
+            ).setVisible(false).setDepth(0.51);
             while (this.people.some((person) => person.characterName === newPerson.characterName) ||
                    this.people.some((person) => person.codename === newPerson.codename) ||
                    this.people.some((person) => person.idNumber === newPerson.idNumber)) {
@@ -84,7 +86,7 @@ export class baseLevel extends Scene {
                     screenWidth / 2,
                     screenHeight / 2.75,
                     isImpostor
-                ).setVisible(false);
+                ).setVisible(false).setDepth(0.51);
                 newPerson.destroy();
                 newPerson = updatedPerson;
             }
@@ -97,6 +99,33 @@ export class baseLevel extends Scene {
             if (tempperson.impostor) {
                 tempperson.setFakeCodenameFromPool(this.people);
             }
+        }
+
+        this.skipButton = this.add
+            .text(screenWidth - 100, 20, "Skip", {
+                fontSize: "24px",
+                color: "#000000",
+            })
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => {
+                console.log("Skip button clicked");
+                this.changeScene();
+            });
+
+        this.guards = this.add.group();
+        const guardPositions = [
+            screenWidth * 0.175,
+            screenWidth * 0.325,
+            screenWidth * 0.65,
+            screenWidth * 0.8
+        ];
+        for (let i = 0; i < 4; i++) {
+            const guard = this.add.image(
+                guardPositions[i],
+                screenHeight / 3, // Near the top/back wall
+                "bodyguard"
+            ).setScale(0.5).setDepth(0.5);
+            this.guards.add(guard);
         }
 
         this.notebook = new notebook(
@@ -221,19 +250,41 @@ export class baseLevel extends Scene {
 
     personRejected() {
         // Wait 3 seconds before moving offscreen to the left
+        this.currentIDCard.destroy(); // Remove ID card when person is rejected
         this.input.enabled = false; // Disable input while waiting
         if (this.currentPerson.impostor) {
             this.score++;
         }
+        this.tweens.add({
+            targets: [this.guards.getChildren()[1], this.guards.getChildren()[2]], // Middle guards react to rejections
+            scale: 0.75,
+            y: this.currentPerson.y + 20,
+            duration: 1500,
+        });
         this.time.delayedCall(3000, () => {
             this.tweens.add({
-                targets: this.currentPerson,
+                targets: [this.currentPerson, this.guards.getChildren()[1], this.guards.getChildren()[2]], // Move person and middle guards off-screen
                 x: -200, // Move offscreen to the left
                 y: this.currentPerson.y,
                 duration: this.moveSpeed,
-                ease: "Power2",
             });
-            this.nextPerson();
+            this.time.delayedCall(this.moveSpeed+1000, () => {
+                this.tweens.add({
+                    targets: this.guards.getChildren()[2], // Move middle guards back to original position
+                    scale: 0.5,
+                    x: this.cameras.main.width * 0.65,
+                    y: this.cameras.main.height / 3,
+                    duration: this.moveSpeed,
+                });
+                this.tweens.add({
+                    targets: this.guards.getChildren()[1],
+                    scale: 0.5,
+                    x: this.cameras.main.width * 0.325,
+                    y: this.cameras.main.height / 3,
+                    duration: this.moveSpeed,
+                });
+                this.nextPerson();
+            });
         });
     }
     nextPerson() {
