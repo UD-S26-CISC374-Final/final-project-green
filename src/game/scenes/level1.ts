@@ -36,6 +36,7 @@ export class Level1 extends Scene {
     bossTimeCount: number = 0;
     bossChat: Phaser.GameObjects.Container;
     bossText: Phaser.GameObjects.Text;
+    clickallowed: boolean = false;
 
     currentPerson: person;
     constructor() {
@@ -168,7 +169,7 @@ export class Level1 extends Scene {
             screenHeight / 1.35,
             `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\n\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\n\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
             false,
-        ).setDepth(1);
+        ).setDepth(1).setVisible(false);
         // Notebook handles its own interactivity
         const startNumber = (this.person4.idNumber - 5) / 2;
         this.giveNote = new giveNote(
@@ -185,7 +186,7 @@ export class Level1 extends Scene {
                     screenWidth / 5.2,
                     screenHeight / 1.35,
                     false,
-                ).setDepth(1);
+                ).setDepth(1).setVisible(false);
 
         
 
@@ -231,8 +232,10 @@ export class Level1 extends Scene {
             .setDepth(1)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
-                console.log("Red button clicked");
-                this.personRejected();
+                if(this.clickallowed){
+                    console.log("Red button clicked");
+                    this.personRejected();
+                }
             });
         // Green button (right)
         const greenButton = this.add
@@ -246,8 +249,10 @@ export class Level1 extends Scene {
             .setDepth(1)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
-                console.log("Green button clicked");
-                this.personAccepted();
+                if(this.clickallowed){
+                    console.log("Green button clicked");
+                    this.personAccepted();
+                }
             });
 
         /*const tempBlob = this.add
@@ -474,6 +479,7 @@ export class Level1 extends Scene {
             this.bossChat.setVisible(true);
             this.time.delayedCall(5000, () => {
                 this.bossText.setText("In order to deduce whether or not they are who they say they are, we will have to trace today's code.");
+                this.notebook.setVisible(true);
                 this.time.delayedCall(5000, () => {
                     this.bossText.setText("Go ahead and click on today's code to take a peek at it.");
                     this.time.delayedCall(5000, () => {
@@ -489,6 +495,7 @@ export class Level1 extends Scene {
             this.bossChat.setVisible(true);
             this.time.delayedCall(5000, () => {
                 this.bossText.setText("If you want to take notes at all, there is a notepad on the left you can click to jot down any thoughts you have.");
+                this.notepad.setVisible(true)
                 this.time.delayedCall(5000, () => {
                     this.bossText.setText("Why dont you try jotting down a little something in there to see how it works?");
                     this.time.delayedCall(5000, () => {
@@ -504,6 +511,7 @@ export class Level1 extends Scene {
             this.bossChat.setVisible(true);
             this.time.delayedCall(5000, () => {
                 this.bossText.setText("The green button means the ID and code match, so they are a coworker, and the red button means they don't, and are an impostor.");
+                this.clickallowed = true;
                 this.time.delayedCall(5000, () => {
                     this.bossChat.setVisible(false);
                     this.input.enabled = true;
