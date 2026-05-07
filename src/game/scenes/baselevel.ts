@@ -8,6 +8,7 @@ import person from "../objects/person";
 import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
+import id from "../objects/id";
 
 export class baseLevel extends Scene {
     moveSpeed: number = 9000;
@@ -26,6 +27,7 @@ export class baseLevel extends Scene {
     maxScore: number = 0;
     giveNote: giveNote;
     currentPerson: person;
+    currentIDCard: id;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
@@ -255,34 +257,13 @@ export class baseLevel extends Scene {
         });
     }
     createIDCard() {
-        const idCard = this.add
-            .container(this.currentPerson.x, this.currentPerson.y + 150)
-            .setDepth(0.5);
-        const rect = this.add
-            .rectangle(0, 0, 150, 75, 0xffffff, 1)
-            .setStrokeStyle(2, 0x000000)
-            .setOrigin(0.5);
-        // Do not set ID card rect as interactive at all
-        const nameText = this.add.text(
-            -70,
-            -35,
-            `Name: ${this.currentPerson.characterName}`,
-            { fontSize: "14px", color: "#000" },
-        );
-        const codenameText = this.add.text(
-            -70,
-            -10,
-            this.currentPerson.impostor ?
-                `Codename: ${this.currentPerson.fakeCodename}`
-            :   `Codename: ${this.currentPerson.codename}`,
-            { fontSize: "14px", color: "#000" },
-        );
-        const idNumberText = this.add.text(
-            -70,
-            15,
-            `ID: ${this.currentPerson.idNumber}`,
-            { fontSize: "14px", color: "#000" },
-        );
-        idCard.add([rect, nameText, codenameText, idNumberText]);
-    }
+            this.currentIDCard = new id(
+                this,
+                this.currentPerson.x,
+                this.currentPerson.y + 150,
+                this.currentPerson.characterName,
+                this.currentPerson.impostor ? this.currentPerson.fakeCodename : this.currentPerson.codename,
+                this.currentPerson.idNumber.toString(),
+            );
+        }
 }

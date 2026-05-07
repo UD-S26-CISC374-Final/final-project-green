@@ -31,6 +31,9 @@ export class Preloader extends Scene {
         this.load.image("phaser-logo", "phaser-logo.png");
         this.load.image("background", "background.png");
         this.load.image("desk+background", "Desk+Background.png");
+        this.load.image("tempboss", "tempboss.png");
+        this.load.image("bodyguard", "Bodyguard.png");
+        this.load.image("id-card", "ID Card.png");
         this.load.image("person1", "Townfolk-Adult-F-001.png");
         this.load.image("person2", "Townfolk-Adult-F-002.png");
         this.load.image("person3", "Townfolk-Adult-F-003.png");

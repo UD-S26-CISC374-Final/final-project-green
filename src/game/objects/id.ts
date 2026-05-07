@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 export default class id extends Phaser.GameObjects.Container {
-    private rect: Phaser.GameObjects.Rectangle;
+    private cardBg: Phaser.GameObjects.Image;
     private nameText: Phaser.GameObjects.Text;
     private codenameText: Phaser.GameObjects.Text;
     private idNumberText: Phaser.GameObjects.Text;
@@ -16,47 +16,84 @@ export default class id extends Phaser.GameObjects.Container {
     ) {
         super(scene, x, y);
 
-        // Rectangle background
-        this.rect = scene.add
-            .rectangle(0, 0, 200, 100, 0xffffff, 0.9)
-            .setStrokeStyle(2, 0x000000)
-            .setOrigin(0.5);
+        // ID card background image
+        this.cardBg = scene.add
+            .image(0, 0, "id-card")
+            .setOrigin(0.5)
+            .setDisplaySize(180, 110);
 
-        // Text fields
-        this.nameText = scene.add.text(-90, -35, `Name: ${name}`, {
-            fontSize: "16px",
+        // Text fields positioned to align with image fields
+        this.nameText = scene.add.text(10, -15, name, {
+            fontSize: "12px",
             color: "#000",
         });
-        this.codenameText = scene.add.text(-90, -10, `Codename: ${codename}`, {
-            fontSize: "16px",
+        this.codenameText = scene.add.text(20, -5, codename, {
+            fontSize: "12px",
             color: "#000",
         });
-        this.idNumberText = scene.add.text(-90, 15, `ID: ${idNumber}`, {
-            fontSize: "16px",
+        this.idNumberText = scene.add.text(-50, 15, idNumber, {
+            fontSize: "12px",
             color: "#000",
         });
 
         this.add([
-            this.rect,
+            this.cardBg,
             this.nameText,
             this.codenameText,
             this.idNumberText,
         ]);
         scene.sys.add.existing(this);
+
+        // Make the card clickable to show enlarged version
+        this.cardBg.setInteractive({ useHandCursor: true });
+        this.cardBg.on('pointerdown', () => {
+            this.openIDCard();
+        });
     }
 
     setName(name: string) {
-        this.nameText.setText(`Name: ${name}`);
+        this.nameText.setText(name);
         return this;
     }
 
     setCodename(codename: string) {
-        this.codenameText.setText(`Codename: ${codename}`);
+        this.codenameText.setText(codename);
         return this;
     }
 
     setIdNumber(idNumber: string) {
-        this.idNumberText.setText(`ID: ${idNumber}`);
+        this.idNumberText.setText(idNumber);
         return this;
+    }
+
+    openIDCard() {
+        const overlay = this.scene.add.container(
+            this.scene.cameras.main.width / 2,
+            this.scene.cameras.main.height / 2
+        ).setDepth(1000);
+        
+        // Semi-transparent background
+        const bg = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height, 0x000000, 0.7);
+        bg.setInteractive();
+        bg.on('pointerdown', () => overlay.destroy());
+        
+        // Enlarged ID card
+        const largeCard = this.scene.add.image(0, 0, "id-card").setDisplaySize(360, 220);
+        
+        // Enlarged text
+        const largeName = this.scene.add.text(20, -30, this.nameText.text, {
+            fontSize: "24px",
+            color: "#000",
+        });
+        const largeCodename = this.scene.add.text(40, -10, this.codenameText.text, {
+            fontSize: "24px",
+            color: "#000",
+        });
+        const largeId = this.scene.add.text(-100, 30, this.idNumberText.text, {
+            fontSize: "24px",
+            color: "#000",
+        });
+        
+        overlay.add([bg, largeCard, largeName, largeCodename, largeId]);
     }
 }

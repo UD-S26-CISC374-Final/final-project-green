@@ -8,6 +8,7 @@ import person from "../objects/person";
 import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
+import id from "../objects/id";
 
 export class Level1 extends Scene {
     moveSpeed: number = 9000;
@@ -27,7 +28,7 @@ export class Level1 extends Scene {
     score: number = 0;
     maxScore: number = 5;
     giveNote: giveNote;
-    currentIDCard: Phaser.GameObjects.Container;
+    currentIDCard: id;
 
     currentPerson: person;
     constructor() {
@@ -137,7 +138,7 @@ export class Level1 extends Scene {
             this,
             screenWidth / 4,
             screenHeight / 1.35,
-            `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
+            `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\n\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\n\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
         ).setDepth(1);
         // Notebook handles its own interactivity
         const startNumber = (this.person4.idNumber - 5) / 2;
@@ -319,35 +320,13 @@ export class Level1 extends Scene {
         });
     }
     createIDCard() {
-        const idCard = this.add
-            .container(this.currentPerson.x, this.currentPerson.y + 150)
-            .setDepth(0.5);
-        const rect = this.add
-            .rectangle(0, 0, 150, 75, 0xffffff, 1)
-            .setStrokeStyle(2, 0x000000)
-            .setOrigin(0.5);
-        // Do not set ID card rect as interactive at all
-        const nameText = this.add.text(
-            -70,
-            -35,
-            `Name: ${this.currentPerson.characterName}`,
-            { fontSize: "14px", color: "#000" },
+        this.currentIDCard = new id(
+            this,
+            this.currentPerson.x,
+            this.currentPerson.y + 150,
+            this.currentPerson.characterName,
+            this.currentPerson.impostor ? this.currentPerson.fakeCodename : this.currentPerson.codename,
+            this.currentPerson.idNumber.toString(),
         );
-        const codenameText = this.add.text(
-            -70,
-            -10,
-            this.currentPerson.impostor ?
-                `Codename: ${this.currentPerson.fakeCodename}`
-            :   `Codename: ${this.currentPerson.codename}`,
-            { fontSize: "14px", color: "#000" },
-        );
-        const idNumberText = this.add.text(
-            -70,
-            15,
-            `ID: ${this.currentPerson.idNumber}`,
-            { fontSize: "14px", color: "#000" },
-        );
-        idCard.add([rect, nameText, codenameText, idNumberText]);
-        this.currentIDCard = idCard;
     }
 }
