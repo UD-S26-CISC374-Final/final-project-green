@@ -33,7 +33,7 @@ export default class notebook extends Phaser.GameObjects.Container {
         const padding = 40;
         const padding_x = 20;
         let currentPage = 0;
-        let pages: string[] = [];
+        const pages: string[] = [];
 
         // Split codes into lines
         const codeLines = this.codes.split('\n');
