@@ -316,5 +316,6 @@ export class baseLevel extends Scene {
                 this.currentPerson.impostor ? this.currentPerson.fakeCodename : this.currentPerson.codename,
                 this.currentPerson.idNumber.toString(),
             );
+            this.currentIDCard.setDepth(1);
         }
 }

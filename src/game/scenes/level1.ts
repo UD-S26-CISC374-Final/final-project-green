@@ -15,6 +15,7 @@ export class Level1 extends Scene {
 
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
+    desk: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
     fpsText: FpsText;
     guards: Phaser.GameObjects.Group;
@@ -55,6 +56,12 @@ export class Level1 extends Scene {
         this.background.displayWidth = screenWidth;
         this.background.displayHeight = screenHeight;
         this.background.setAlpha(1);
+
+        this.desk = this.add.image(
+            screenWidth / 2,
+            screenHeight * 0.75,
+            "desk",
+        ).setScale(0.75).setDepth(0.99);
 
         this.fpsText = new FpsText(this);
 
@@ -365,5 +372,6 @@ export class Level1 extends Scene {
             this.currentPerson.impostor ? this.currentPerson.fakeCodename : this.currentPerson.codename,
             this.currentPerson.idNumber.toString(),
         );
+        this.currentIDCard.setDepth(1);
     }
 }
