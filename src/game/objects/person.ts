@@ -68,11 +68,14 @@ export default class person extends Phaser.GameObjects.Sprite {
     fakeCodename: string = "";
     impostor: boolean;
     boss: boolean;
-    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean, boss: boolean = false) {
+    kiernan: boolean;
+    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean, boss: boolean = false, kiernan = false) {
         const randomIndex = Math.floor(Math.random() * Spritelist.length);
         const texture = Spritelist[randomIndex];
         if (boss) {
             super(scene, x, y, "tempboss");
+        } else if (kiernan){
+            super(scene, x, y, "miirnan")
         } else {
             super(scene, x, y, texture);
         
@@ -87,6 +90,7 @@ export default class person extends Phaser.GameObjects.Sprite {
             this.impostor = impostor;
         }
         this.boss = boss;
+        this.kiernan = kiernan
         scene.add.existing(this);
     }
     setFakeCodenameFromPool(pool: person[]) {

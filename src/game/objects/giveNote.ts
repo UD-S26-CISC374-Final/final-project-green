@@ -3,7 +3,6 @@ export default class giveNote extends Phaser.GameObjects.Container {
     private text: Phaser.GameObjects.Text;
     private codes: string;
     private correctId: number;
-    private giveButton: Phaser.GameObjects.Text;
     private emitted: boolean;
     constructor(
         scene: Phaser.Scene,
@@ -105,7 +104,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.children.remove(notebookContent);
                 this.scene.children.remove(closeButton);
                 this.scene.children.remove(codesText);
-                this.scene.children.remove(this.giveButton);
+                this.scene.children.remove(giveButton); 
                 this.setVisible(false);
             });
         giveButton.setOrigin(0.5, 0.5).setDepth(12);

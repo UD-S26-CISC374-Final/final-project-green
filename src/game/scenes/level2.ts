@@ -10,4 +10,8 @@ export class Level2 extends baseLevel {
         super.create();
         this.notebook.setText(random2Code(this.people));
     }
+
+
+
+
 }   

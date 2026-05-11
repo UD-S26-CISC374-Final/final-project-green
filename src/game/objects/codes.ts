@@ -1,11 +1,5 @@
 import type person from "./person";
 
-const level4code1 = "";
-
-const level5code1 = "";
-
-
-
 export function random2Code(people: person[]): string {
     const level2code1 = `int main() {\n    char *${people[0].codename} = "${people[3].characterName}";\n    char *${people[1].codename} = "${people[4].characterName}";\n    char *${people[2].codename} = "${people[5].characterName}";\n    char *${people[3].codename} = "${people[1].characterName}";\n    char *${people[4].codename} = "${people[0].characterName}";\n    char *${people[5].codename} = "${people[2].characterName}";\n\n    char **p1 = &${people[0].codename};\n    char **p2 = &${people[1].codename};\n    char **p3 = &${people[2].codename};\n    char **p4 = &${people[3].codename};\n    char **p5 = &${people[4].codename};\n    char **p6 = &${people[5].codename};\n    char *temp;\n    temp = *p1; *p1 = *p4; *p4 = temp;\n    temp = *p2; *p2 = *p5; *p5 = temp;\n    p3 = p6;\n    p6 = &${people[2].codename};\n    temp = *p3; *p3 = *p6; *p6 = temp;\n    temp = *p1; *p1 = *p2; *p2 = temp;\n\n    printf("${people[0].codename}: %s\\n", ${people[0].codename});\n    printf("${people[1].codename}: %s\\n", ${people[1].codename});\n    printf("${people[2].codename}: %s\\n", ${people[2].codename});\n    printf("${people[3].codename}: %s\\n", ${people[3].codename});\n    printf("${people[4].codename}: %s\\n", ${people[4].codename});\n    printf("${people[5].codename}: %s\\n", ${people[5].codename});\n\n    return 0;\n}`;
     const level2codes: string[] = [level2code1];
@@ -19,12 +13,41 @@ export function random3Code(people: person[]): string {
     return level3codes[randomIndex];
 }
 export function random4Code(): string {
+    const level4code1 = "";
     const level4codes: string[] = [level4code1];
     const randomIndex = Math.floor(Math.random() * level4codes.length);
     return level4codes[randomIndex];
 }
 export function random5Code(): string {
+    const level5code1 = "";
     const level5codes: string[] = [level5code1];
     const randomIndex = Math.floor(Math.random() * level5codes.length);
     return level5codes[randomIndex];
+}
+
+export function random3bugfix() {
+    const level3bugfix1 = "";
+
+    const correctline = [1]
+    const level3bugfix: string[] = [level3bugfix1];
+    const randomIndex = Math.floor(Math.random() * level3bugfix.length);
+    
+    const problem = level3bugfix[randomIndex];
+    const answer = correctline[randomIndex]
+
+    return { problem , answer };
+}
+
+export function random4bugfix(): string {
+    const level4bugfix1 = "";
+    const level4bugfix: string[] = [level4bugfix1];
+    const randomIndex = Math.floor(Math.random() * level4bugfix.length);
+    return level4bugfix[randomIndex]
+}
+
+export function random5bugfix(): string {
+    const level5bugfix1 = "";
+    const level5bugfix: string[] = [level5bugfix1];
+    const randomIndex = Math.floor(Math.random() * level5bugfix.length);
+    return level5bugfix[randomIndex]
 }
