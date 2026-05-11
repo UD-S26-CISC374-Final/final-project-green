@@ -1,16 +1,14 @@
 export default class bugFix extends Phaser.GameObjects.Container {
 
-
     public codes: string;
     public correctLine: number;
-    public kiernanchat: Phaser.GameObjects.Container;
     public overlay: Phaser.GameObjects.Rectangle
 
     constructor(
         scene: Phaser.Scene,
         x: number,
         y: number,
-        codes: string = "",
+        codes: string = "Hi its me broken code. \n\nand another line",
         correctLine: number = 1
     ) {
         super(scene, x, y);
@@ -36,27 +34,11 @@ export default class bugFix extends Phaser.GameObjects.Container {
             });
         
         scene.add.existing(this);
-        this.createChatPopup();
-        this.scene.time.delayedCall(5000, () => {
-            this.createCodePopup();
-            this.kiernanchat.destroy;
-        });
-    }
-
-    createChatPopup() {
-        this.kiernanchat = this.scene.add
-        .container(this.scene.cameras.main.width / 1.75, this.scene.cameras.main.height / 5)
-        .setDepth(1)
-        .setVisible(false);
-        const bossTextBackground = this.scene.add
-        .rectangle(0, 0, 400, 100, 0xffffff)
-        .setStrokeStyle(3, 0x000000);
-        const kiernantext = this.scene.add.text(-180, -40, "Hey, would you be able to take a look at this code. It doesn't work, could you click the line that makes it break?", {
-            fontSize: "18px",
-            color: "#000000",
-            wordWrap: { width: 350 },
-        });
-        this.kiernanchat.add([bossTextBackground, kiernantext]);
+        this.setDepth(20)
+        
+        
+        this.createCodePopup();
+            
     }
 
     createCodePopup() {
@@ -66,11 +48,11 @@ export default class bugFix extends Phaser.GameObjects.Container {
         const bg = this.scene.add.rectangle(
             0,
             0,
-            600,
             400,
+            600,
             0x1e1e1e
         )
-        .setOrigin(0);
+        .setOrigin(0.5);
 
         this.add(bg);
 
@@ -122,8 +104,11 @@ export default class bugFix extends Phaser.GameObjects.Container {
 
                     console.log("Wrong!");
                 }
-                
+
+                this.scene.events.emit('bugFixed')
+                this.overlay.destroy();
                 this.destroy();
+                
                 
             });
 

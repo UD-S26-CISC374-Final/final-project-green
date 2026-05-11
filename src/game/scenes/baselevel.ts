@@ -10,6 +10,7 @@ import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
 import id from "../objects/id";
 import bugFix from "../objects/bugFixTask";
+import { random3bugfix } from "../objects/codes";
 
 export class baseLevel extends Scene {
     moveSpeed: number = 5000;
@@ -20,7 +21,8 @@ export class baseLevel extends Scene {
     numberOfTasks: number;
     numberOfPeople: number;
     numberOfImpostors: number;
-    people: person[];
+    people: person[] = [];
+    peopleOrder: person[] = [];
     currentPersonIndex: number = -1;
     notebook: notebook;
     notepad: notepad;
@@ -36,7 +38,7 @@ export class baseLevel extends Scene {
     dialogueOverlay: any;
     bossTimeCount: number = 0;
     boss: person;
-    kiernan: person;
+    currentBugFix: bugFix;
     currentSequence: any;
     currentBossLine: number;
     bossChat: any;
@@ -56,9 +58,9 @@ export class baseLevel extends Scene {
     create() {
 
         let randomindexlist: number[] = []
-        for(let i = 0; i < this.numberOfTasks; i++){
+        for(let i = 0; i < this.numberOfTasks-1; i++){
             let randomIndex = Math.floor(Math.random() * this.numberOfPeople);
-                while(randomIndex in randomindexlist){
+                while(randomindexlist.includes(randomIndex)){
                     randomIndex = Math.floor(Math.random() * this.numberOfPeople)
                 }
                 randomindexlist.push(randomIndex);
@@ -91,8 +93,7 @@ export class baseLevel extends Scene {
         this.fpsText = new FpsText(this);
         
         this.boss = new person(this, screenWidth + 300, screenHeight / 2.75, false, true).setVisible(false).setDepth(0.51).setScale(0.5);   
-        this.kiernan = new person(this, screenWidth / 2, screenHeight / 2.75, false, false, true).setVisible(false).setDepth(0.51).setScale(0.5);           
-
+        
         const impostornumbers: number[] = [];
         for (let i = 0; i < this.numberOfImpostors; i++) {
             const randomNum = Math.floor(Math.random() * this.numberOfPeople);
@@ -121,10 +122,29 @@ export class baseLevel extends Scene {
                 newPerson = updatedPerson;
             }
             this.people.push(newPerson);
+            this.peopleOrder.push(newPerson);
 
-            if(i in randomindexlist){
-                this.people.push(this.kiernan);
-            }
+            if (randomindexlist.includes(i)) {
+
+        const kiernanPerson = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            false,
+            false,
+            true
+        )
+        .setVisible(false)
+        .setDepth(0.51)
+        .setScale(0.1);
+
+        kiernanPerson.defaultscale = 1;
+        this.peopleOrder.push(kiernanPerson);
+}       
+        this.events.on("bugFixed", () => {
+                this.nextPerson();
+            });
+
         }
 
         for (const tempperson of this.people) {
@@ -266,22 +286,26 @@ export class baseLevel extends Scene {
     }
 
     personAccepted() {
-        this.input.enabled = false; // Disable input while moving offscreen
-        this.currentIDCard.destroy();
-        if (!this.currentPerson.impostor) {
-            this.score++;
+        if (this.clickallowed){
+            this.input.enabled = false; // Disable input while moving offscreen
+            this.currentIDCard.destroy();
+            if (!this.currentPerson.impostor) {
+                this.score++;
+            }
+            this.tweens.add({
+                targets: this.currentPerson,
+                x: this.cameras.main.width + 200, // Move off-screen to the right
+                y: this.currentPerson.y,
+                duration: this.moveSpeed,
+                ease: "Power2",
+            });
+            this.nextPerson();
         }
-        this.tweens.add({
-            targets: this.currentPerson,
-            x: this.cameras.main.width + 200, // Move off-screen to the right
-            y: this.currentPerson.y,
-            duration: this.moveSpeed,
-            ease: "Power2",
-        });
-        this.nextPerson();
+        
     }
 
     personRejected() {
+        if (this.clickallowed){
         // Wait 3 seconds before moving offscreen to the left
         this.currentIDCard.destroy(); // Remove ID card when person is rejected
         this.input.enabled = false; // Disable input while waiting
@@ -320,25 +344,24 @@ export class baseLevel extends Scene {
             });
         });
     }
+    }
     nextPerson() {
         this.currentPersonIndex++;
         this.time.delayedCall(this.moveSpeed, () => {
-            if (this.currentPersonIndex < this.people.length) {
-                this.currentPerson = this.people[this.currentPersonIndex];
+            if (this.currentPersonIndex < this.peopleOrder.length) {
+                this.currentPerson = this.peopleOrder[this.currentPersonIndex];
                 this.currentPerson.setVisible(true);
                 this.tweens.add({
                     targets: this.currentPerson,
-                    scale: 3,
+                    scale: this.currentPerson.defaultscale,
                     duration: this.moveSpeed,
                     ease: "Back.Out",
                 });
+                console.log(this.currentPerson);
+                console.log("is kiernan?", this.currentPerson.kiernan);
                 this.time.delayedCall(4000, () => {
                     if (this.currentPerson.kiernan){
-                        new bugFix(
-                            this,
-                            0,
-                            0
-                        )
+                        this.bossTime()
                     } else {
                         this.createIDCard();
                         this.clickallowed = true;
@@ -407,9 +430,22 @@ export class baseLevel extends Scene {
                     this.nextPerson();
                 }
             },
+            1: {
+                lines: [
+                    "Yo what's up buddy!",
+                    "See I'm having this issue with my code and I got no clue what's going wrong.",
+                    "Would you mind taking a peek at it and letting me know what the problem is?",
+                    "Just go ahead and click on the line where the error occurrs."
+                ],
+                onComplete: () => {
+                    const { problem, answer } = random3bugfix();
+                    this.currentBugFix = new bugFix(this, this.camera.width/2, this.camera.height/2, problem, answer);
+                }
+            }
         };
 
-        this.currentSequence = sequences[this.bossTimeCount];
+        this.currentSequence =
+        sequences[this.bossTimeCount > 0 ? 1 : 0];
 
         if (!this.currentSequence) return;
 
