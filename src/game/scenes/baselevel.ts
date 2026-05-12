@@ -10,7 +10,14 @@ import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
 import id from "../objects/id";
 import bugFix from "../objects/bugFixTask";
-import { random3bugfix } from "../objects/codes";
+
+type BossSequence = {
+    moveIn?: boolean;
+    lines: string[];
+    delays?: number[];
+    actions?: Record<number, () => void>;
+    onComplete?: () => void;
+};
 
 export class baseLevel extends Scene {
     moveSpeed: number = 5000;
@@ -35,20 +42,20 @@ export class baseLevel extends Scene {
     skipButton: Phaser.GameObjects.Text;
     guards: Phaser.GameObjects.Group;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
-    dialogueOverlay: any;
+    dialogueOverlay?: Phaser.GameObjects.Rectangle;
     bossTimeCount: number = 0;
     boss: person;
     currentBugFix: bugFix;
-    currentSequence: any;
+    currentSequence: BossSequence;
     currentBossLine: number;
-    bossChat: any;
-    bossText: any;
+    bossChat: Phaser.GameObjects.Container;
+    bossText: Phaser.GameObjects.Text;
     bossTimer: Phaser.Time.TimerEvent;
-    skipLocked: any;
+    skipLocked: boolean;
     desk: Phaser.GameObjects.Image;
     clickallowed: boolean = false;
     bugFixTasks: { problem: string; answer: number }[] = [];
-    currentBugIndex: any;
+    currentBugIndex: number;
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
         this.numberOfPeople = numberOfPeople;
@@ -59,7 +66,7 @@ export class baseLevel extends Scene {
 
     create() {
 
-        let randomindexlist: number[] = []
+        const randomindexlist: number[] = []
         for(let i = 0; i < this.numberOfTasks-1; i++){
             let randomIndex = Math.floor(Math.random() * this.numberOfPeople);
                 while(randomindexlist.includes(randomIndex)){
@@ -413,7 +420,7 @@ export class baseLevel extends Scene {
 
         this.boss.setVisible(true);
 
-        const sequences: Record<number, any> = {
+        const sequences: Record<number, BossSequence> = {
 
             0: {
                 moveIn: true,
@@ -470,8 +477,6 @@ export class baseLevel extends Scene {
         this.currentSequence =
         sequences[this.bossTimeCount > 0 ? 1 : 0];
 
-        if (!this.currentSequence) return;
-
         this.currentBossLine = 0;
 
         const startDialogue = () => {
@@ -523,12 +528,7 @@ export class baseLevel extends Scene {
             this.currentSequence.lines[this.currentBossLine]
         );
 
-        if (
-            this.currentSequence.actions &&
-            this.currentSequence.actions[this.currentBossLine]
-        ) {
-            this.currentSequence.actions[this.currentBossLine]();
-        }
+        this.currentSequence.actions?.[this.currentBossLine]?.();
 
         const delay =
             this.currentSequence.delays?.[this.currentBossLine] || 5000;
@@ -550,7 +550,7 @@ export class baseLevel extends Scene {
             this.skipLocked = false;
         });
 
-        if (this.bossTimer && !this.bossTimer.hasDispatched) {
+        if (!this.bossTimer.hasDispatched) {
 
             this.bossTimer.remove(false);
 

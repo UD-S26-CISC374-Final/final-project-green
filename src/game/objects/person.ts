@@ -105,7 +105,7 @@ export default class person extends Phaser.GameObjects.Sprite {
         if (this.boss || this.kiernan) return;
         let fake: string;
         const goodpool = []
-        for (let p of pool) {
+        for (const p of pool) {
             if (!p.kiernan) {
                 goodpool.push(p);
             }

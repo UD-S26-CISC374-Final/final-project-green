@@ -13,7 +13,7 @@ export class Level3 extends baseLevel {
         while (randomperson.impostor) {
             randomperson = this.people[Math.floor(Math.random() * this.people.length)]
         }
-        let start = ((randomperson.idNumber + 9) / 2) - 4;
+        const start = ((randomperson.idNumber + 9) / 2) - 4;
 
         this.giveNote.setText(`#include <stdio.h>
 

@@ -9,6 +9,14 @@ import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
 import id from "../objects/id";
 
+type BossSequence = {
+    moveIn?: boolean;
+    lines: string[];
+    delays?: number[];
+    actions?: Record<number, () => void>;
+    onComplete?: () => void;
+};
+
 export class Level1 extends Scene {
     moveSpeed: number = 5000;
 
@@ -38,11 +46,11 @@ export class Level1 extends Scene {
     bossText: Phaser.GameObjects.Text;
     clickallowed: boolean = false;
     currentPerson: person;
-    currentSequence: any;
+    currentSequence: BossSequence;
     currentBossLine: number;
     bossTimer: Phaser.Time.TimerEvent;
-    skipLocked: any;
-    dialogueOverlay: any;
+    skipLocked: boolean;
+    dialogueOverlay: Phaser.GameObjects.Rectangle;
     constructor() {
         super("Level1");
     }
@@ -422,7 +430,6 @@ export class Level1 extends Scene {
     }
 
     bossTime() {
-        if (!this.dialogueOverlay) {
 
     this.dialogueOverlay = this.add
         .rectangle(
@@ -439,7 +446,6 @@ export class Level1 extends Scene {
     this.dialogueOverlay.on("pointerdown", () => {
         this.skipBossDialogue();
     });
-}
 
 this.dialogueOverlay.setActive(true);
 this.dialogueOverlay.setVisible(true);
@@ -449,7 +455,7 @@ this.dialogueOverlay.setVisible(true);
     this.clickallowed = false;
     this.boss.setVisible(true);
 
-    const sequences: Record<number, any> = {
+    const sequences: Record<number, BossSequence> = {
 
         0: {
             moveIn: true,
@@ -612,8 +618,6 @@ this.dialogueOverlay.setVisible(true);
 
     this.currentSequence = sequences[this.bossTimeCount];
 
-    if (!this.currentSequence) return;
-
     this.currentBossLine = 0;
 
     const startDialogue = () => {
@@ -647,10 +651,10 @@ showBossLine() {
 
         this.bossChat.setVisible(false);
 
-        if (this.dialogueOverlay) {
-            this.dialogueOverlay.setVisible(false);
-            this.dialogueOverlay.setActive(false);
-        }
+        
+        this.dialogueOverlay.setVisible(false);
+        this.dialogueOverlay.setActive(false);
+        
 
         if (this.currentSequence.onComplete) {
             this.currentSequence.onComplete();
@@ -665,12 +669,9 @@ showBossLine() {
         this.currentSequence.lines[this.currentBossLine]
     );
 
-    if (
-        this.currentSequence.actions &&
-        this.currentSequence.actions[this.currentBossLine]
-    ) {
-        this.currentSequence.actions[this.currentBossLine]();
-    }
+    
+    this.currentSequence.actions?.[this.currentBossLine]?.();
+    
 
     const delay =
         this.currentSequence.delays?.[this.currentBossLine] || 5000;
@@ -692,7 +693,7 @@ showBossLine() {
         this.skipLocked = false;
     });
 
-    if (this.bossTimer && !this.bossTimer.hasDispatched) {
+    if (!this.bossTimer.hasDispatched) {
 
         this.bossTimer.remove(false);
 

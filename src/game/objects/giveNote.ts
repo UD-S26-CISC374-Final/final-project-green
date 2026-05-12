@@ -40,8 +40,6 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
-        // eslint-disable-next-line prefer-const
-        
 
         const overlay = this.scene.add
             .rectangle(
