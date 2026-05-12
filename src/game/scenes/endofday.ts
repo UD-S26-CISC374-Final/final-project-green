@@ -71,7 +71,7 @@ export class EndOfDay extends Scene {
             this.scene.start("Level3");
         } else if (TOTAL_MAX_SCORE === 22) {
             this.scene.start("Level4");
-        } else if (TOTAL_MAX_SCORE === 35) {
+        } else if (TOTAL_MAX_SCORE === 34) {
             this.scene.start("Level5");
         } else {
             this.scene.start("GameOver");

@@ -1,4 +1,4 @@
-import { random4Code } from "../objects/codes";
+import { random4bugfix, random4Code } from "../objects/codes";
 import { baseLevel } from "./baselevel";
 
 export class Level4 extends baseLevel {
@@ -37,6 +37,8 @@ int main() {
     printf("Final ID: %d\\n", x);
 
     return 0;
-}`, randomperson.idNumber)
+}`, randomperson.idNumber);
+
+    ({problem: this.bugfixproblem, answer: this.bugfixanswer} = random4bugfix());
         }
 }

@@ -196,7 +196,7 @@ int main() {
     mix(p1, p5, ${people[8].codename});
 
     printf("${people[8].codename}: %s\\n", ${people[8].codename});
-    printf("${people[12].codename}: %s\\n", ${people[12].codename});
+    printf("${people[11].codename}: %s\\n", ${people[11].codename});
 
     swap_ptr(p6, p9);
     swap_ptr(p2, p10);

@@ -1,7 +1,9 @@
-import { random5Code } from "../objects/codes";
+import { random5bugfix, random5Code } from "../objects/codes";
 import { baseLevel } from "./baselevel";
 
 export class Level5 extends baseLevel {
+    randombugfixproblem2: string
+    randombugfixanswer2: number
     constructor() {
         super(12,5,3,"Level5");
     }
@@ -38,6 +40,11 @@ int main() {
     printf("Final ID: %d\\n", z);
 
     return 0;
-}`, randomperson.idNumber)
+}`, randomperson.idNumber);
+        ({problem: this.bugfixproblem, answer: this.bugfixanswer} = random5bugfix());
+        while(this.bugfixproblem === this.randombugfixproblem2) {
+            ({problem: this.randombugfixproblem2, answer: this.randombugfixanswer2} = random5bugfix());
         }
+        }
+        
 }

@@ -3,7 +3,7 @@ import { random2Code } from "../objects/codes";
 
 export class Level2 extends baseLevel {
     constructor() {
-        super(6,2,2,"Level2");
+        super(6,2,1,"Level2");
     }
 
     create(): void {
@@ -25,9 +25,8 @@ int main() {
 
     return 0;
 }`, randomperson.idNumber)
+
     }
-
-
 
 
 }   
