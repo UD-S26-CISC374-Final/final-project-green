@@ -68,33 +68,53 @@ export default class person extends Phaser.GameObjects.Sprite {
     fakeCodename: string = "";
     impostor: boolean;
     boss: boolean;
-    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean, boss: boolean = false) {
+    kiernan: boolean;
+    defaultscale: number = 3;
+    constructor(scene: Phaser.Scene, x: number, y: number, impostor: boolean, boss: boolean = false, kiernan = false) {
         const randomIndex = Math.floor(Math.random() * Spritelist.length);
         const texture = Spritelist[randomIndex];
-        if (boss) {
-            super(scene, x, y, "tempboss");
-        } else {
-            super(scene, x, y, texture);
+        super(
+            scene,
+            x,
+            y,
+            boss ? "tempboss"
+            : kiernan ? "miirnan"
+            : texture
+        );
+        this.boss = boss;
+        this.kiernan = kiernan;
+        this.impostor = impostor;
         
+
+        if (!boss && !kiernan) {
+
             this.characterName =
-                randomIndex < 6 ?
-                    NamelistF[Math.floor(Math.random() * NamelistF.length)]
-                :   NamelistM[Math.floor(Math.random() * NamelistM.length)];
+                randomIndex < 6
+                    ? NamelistF[Math.floor(Math.random() * NamelistF.length)]
+                    : NamelistM[Math.floor(Math.random() * NamelistM.length)];
+
             this.codename =
                 CodenameList[Math.floor(Math.random() * CodenameList.length)];
+
             this.idNumber = Math.floor(Math.random() * 1000);
-        
-            this.impostor = impostor;
         }
-        this.boss = boss;
         scene.add.existing(this);
     }
     setFakeCodenameFromPool(pool: person[]) {
+
+        if (this.boss || this.kiernan) return;
         let fake: string;
+        const goodpool = []
+        for (let p of pool) {
+            if (!p.kiernan) {
+                goodpool.push(p);
+            }
+        }
 
         do {
-            const random = pool[Math.floor(Math.random() * pool.length)];
+            const random = goodpool[Math.floor(Math.random() * goodpool.length)];
             fake = random.codename;
+
         } while (fake === this.codename);
 
         this.fakeCodename = fake;

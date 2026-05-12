@@ -2,7 +2,6 @@ import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
 import { setMaxScore, setScore } from "../objects/score";
 
-import PhaserLogo from "../objects/phaser-logo";
 import FpsText from "../objects/fps-text";
 import person from "../objects/person";
 import notebook from "../objects/notebook";
@@ -16,9 +15,10 @@ export class Level1 extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     desk: Phaser.GameObjects.Image;
-    phaserLogo: PhaserLogo;
     fpsText: FpsText;
     guards: Phaser.GameObjects.Group;
+    redButton: Phaser.GameObjects.Arc;
+    greenButton: Phaser.GameObjects.Arc;
     person1: person;
     person2: person;
     person3: person;
@@ -37,8 +37,12 @@ export class Level1 extends Scene {
     bossChat: Phaser.GameObjects.Container;
     bossText: Phaser.GameObjects.Text;
     clickallowed: boolean = false;
-
     currentPerson: person;
+    currentSequence: any;
+    currentBossLine: number;
+    bossTimer: Phaser.Time.TimerEvent;
+    skipLocked: any;
+    dialogueOverlay: any;
     constructor() {
         super("Level1");
     }
@@ -167,7 +171,7 @@ export class Level1 extends Scene {
             this,
             screenWidth / 4,
             screenHeight / 1.35,
-            `int main() {\nchar *${this.person1.codename} = "${this.person3.characterName}";\nchar *${this.person2.codename} = "${this.person4.characterName}";\nchar *${this.person3.codename} = "${this.person1.characterName}";\nchar *${this.person4.codename} = "${this.person2.characterName}";\nchar *tmp;\n\ntmp = ${this.person1.codename};\n${this.person1.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person4.codename};\n${this.person4.codename} = ${this.person2.codename};\n${this.person2.codename} = tmp;\ntmp = ${this.person4.codename};\n${this.person4.codename} = ${this.person3.codename};\n${this.person3.codename} = ${this.person1.codename};\n${this.person1.codename} = tmp;\n\nprintf("%s\\n", ${this.person1.codename});\nprintf("%s\\n", ${this.person2.codename});\nprintf("%s\\n", ${this.person3.codename});\nprintf("%s\\n", ${this.person4.codename});\nreturn 0;\n}`,
+            `int main()     {\nchar *${this.person1.codename} = "${this.person3.characterName}";\n     char *${this.person2.codename} = "${this.person4.characterName}";\n     char *${this.person3.codename} = "${this.person1.characterName}";\n     char *${this.person4.codename} = "${this.person2.characterName}";\n     char *tmp;\n\n     tmp = ${this.person1.codename};\n     ${this.person1.codename} = ${this.person3.codename};\n     ${this.person3.codename} = ${this.person4.codename};\n     ${this.person4.codename} = ${this.person2.codename};\n     ${this.person2.codename} = tmp;\n     tmp = ${this.person4.codename};\n     ${this.person4.codename} = ${this.person3.codename};\n     ${this.person3.codename} = ${this.person1.codename};\n     ${this.person1.codename} = tmp;\n\n     printf("%s\\n", ${this.person1.codename});\n     printf("%s\\n", ${this.person2.codename});\n     printf("%s\\n", ${this.person3.codename});\n     printf("%s\\n", ${this.person4.codename});\n     return 0;\n}`,
             false,
         ).setDepth(1).setVisible(false);
         // Notebook handles its own interactivity
@@ -203,25 +207,13 @@ export class Level1 extends Scene {
 
         // Desk rectangle
         const deskY = screenHeight * 0.75;
-        const tempdesk = this.add
-            .rectangle(
-                screenWidth / 2,
-                deskY, // center of bottom half
-                screenWidth,
-                screenHeight / 2,
-                0xffffff,
-            )
-            .setStrokeStyle(3, 0x000000)
-            .setDepth(0.4)
-            .setVisible(false);
-        // Do not set desk as interactive at all
 
         // Add two buttons on the desk at the very end, with highest depth
         const buttonRadius = 40;
         const buttonY = deskY;
         const buttonSpacing = 120;
         // Red button (left)
-        const redButton = this.add
+        this.redButton = this.add
             .circle(
                 screenWidth / 2 - buttonSpacing,
                 buttonY,
@@ -230,6 +222,7 @@ export class Level1 extends Scene {
             )
             .setStrokeStyle(4, 0x880000)
             .setDepth(1)
+            .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 if(this.clickallowed){
@@ -238,7 +231,7 @@ export class Level1 extends Scene {
                 }
             });
         // Green button (right)
-        const greenButton = this.add
+        this.greenButton = this.add
             .circle(
                 screenWidth / 2 + buttonSpacing,
                 buttonY,
@@ -247,6 +240,7 @@ export class Level1 extends Scene {
             )
             .setStrokeStyle(4, 0x006600)
             .setDepth(1)
+            .setVisible(false)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 if(this.clickallowed){
@@ -273,8 +267,6 @@ export class Level1 extends Scene {
         console.log("Person 3:", this.person3);
         console.log("Person 4:", this.person4);
 
-        //fix errors with unused variables
-        console.log(tempdesk, redButton, greenButton);
 
         this.bossChat = this.add
         .container(this.cameras.main.width / 1.75, this.cameras.main.height / 5)
@@ -341,13 +333,10 @@ export class Level1 extends Scene {
             ease: "Power2",
         });
         
-        if (this.bossTimeCount === 1 || this.bossTimeCount === 5 || this.bossTimeCount === 6 || this.bossTimeCount === 8 || this.bossTimeCount === 9) {
+        
             this.time.delayedCall(this.moveSpeed, () => {
                 this.bossTime();
             });
-        } else {
-            this.nextPerson();
-        }
     }
 
     personRejected() {
@@ -385,13 +374,11 @@ export class Level1 extends Scene {
                     y: this.cameras.main.height / 3,
                     duration: this.moveSpeed,
                 });
-                if (this.bossTimeCount === 1 || this.bossTimeCount === 5 || this.bossTimeCount === 6 || this.bossTimeCount === 8 || this.bossTimeCount === 9) {
+                
                     this.time.delayedCall(2000, () => {
                         this.bossTime();
                     });
-                } else {
-                    this.nextPerson();
-                }
+                
             });
         });
     }
@@ -409,7 +396,8 @@ export class Level1 extends Scene {
                 });
                 this.time.delayedCall(4000, () => {
                     this.createIDCard();
-                    this.input.enabled = true; // Re-enable input for the next person
+                    this.clickallowed = true; // Re-enable input for the next person
+                    this.input.enabled = true;
                     if(this.bossTimeCount === 1) {
                         this.bossTime();
                     }
@@ -434,175 +422,281 @@ export class Level1 extends Scene {
     }
 
     bossTime() {
-        console.log("Boss time called, bossTimeCount:", this.bossTimeCount);
-        this.input.enabled = false; // Disable input during boss sequence
-        this.boss.setVisible(true);
-        if (this.bossTimeCount === 0) {
-            this.tweens.add({
-                x: this.cameras.main.width / 1.33,
-                targets: this.boss,
-                duration: this.moveSpeed,
-            });
-            this.time.delayedCall(this.moveSpeed, () => {
-                this.bossChat.setVisible(true);
-                this.time.delayedCall(5000, () => {
-                    this.bossText.setText("Don't worry, I'll be here to help you out through your first day. Just follow my instructions and you'll do great!");
-                    this.time.delayedCall(5000, () => {
-                        this.bossText.setText("Oh, and if you ever forget anything I tell you go ahead and give me a pat on the shoulder, I'll repeat it for you.")
-                        this.time.delayedCall(5000, () => {
-                            this.bossText.setText("Alright, let's get started with the first person.");
-                            this.time.delayedCall(5000, () => {
-                                this.bossChat.setVisible(false);
-                                this.bossTimeCount++;
-                                this.nextPerson();
-                            });
-                        });
-                    });
-                });                
-            });
+        if (!this.dialogueOverlay) {
 
-        }
-        else if (this.bossTimeCount === 1) {
-            this.bossText.setText("This is one of your coworkers, make sure to greet them so you're not an ass.");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("There is their ID card, go ahead and click it so you can read it better.");
-                this.time.delayedCall(5000, () => {
-                    this.bossChat.setVisible(false);
-                    this.input.enabled = true;
-                    this.bossTimeCount++;
-                });
-            });
-        }
-        else if (this.bossTimeCount === 2) {
-            this.bossText.setText(`Ah, so this is ${this.currentPerson.characterName}, or as we call them, ${this.currentPerson.codename}.`);
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("In order to deduce whether or not they are who they say they are, we will have to trace today's code.");
-                this.notebook.setVisible(true);
-                this.time.delayedCall(5000, () => {
-                    this.bossText.setText("Go ahead and click on today's code to take a peek at it.");
-                    this.time.delayedCall(5000, () => {
-                        this.bossChat.setVisible(false);
-                        this.input.enabled = true;
-                        this.bossTimeCount++;
-                    });
-                });
-            });
-        }
-        else if (this.bossTimeCount === 3) {
-            this.bossText.setText("Now we have to trace that code to see if his codename on his ID matches what would be printed by the respective print statement in the code.");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("If you want to take notes at all, there is a notepad on the left you can click to jot down any thoughts you have.");
-                this.notepad.setVisible(true)
-                this.time.delayedCall(5000, () => {
-                    this.bossText.setText("Why dont you try jotting down a little something in there to see how it works?");
-                    this.time.delayedCall(5000, () => {
-                        this.bossChat.setVisible(false);
-                        this.input.enabled = true;
-                        this.bossTimeCount++;
-                    });
-                });
-            });
-        }
-        else if (this.bossTimeCount === 4) {
-            this.bossText.setText("Once you think you have figured out whether or not they are an impostor, go ahead and hit one of the two buttons on the desk.");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("The green button means the ID and code match, so they are a coworker, and the red button means they don't, and are an impostor.");
-                this.clickallowed = true;
-                this.time.delayedCall(5000, () => {
-                    this.bossChat.setVisible(false);
-                    this.input.enabled = true;
-                    this.bossTimeCount++;
-                });
-            });
-        }
-        else if (this.bossTimeCount === 5) {
-            this.bossText.setText("Nice job! You're a natural at this! Just keep doing what you're doing and you'll do great!");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText('*ring ring*');
-                this.time.delayedCall(3000, () => {
-                    this.bossText.setText("Oh, sorry, I'm getting a call. Here, let me take this and you check in the next person.");
-                    this.time.delayedCall(5000, () => {
-                        this.bossChat.setVisible(false);
-                        this.tweens.add({
-                            x: this.cameras.main.width + 300,
-                            targets: this.boss,
-                        });
-                        this.bossTimeCount++;
-                        this.nextPerson();
-                    });
-                });
-            });
-        }
-        else if (this.bossTimeCount === 6) {
-            this.tweens.add({
-                x: this.cameras.main.width / 1.33,
-                targets: this.boss,
-                duration: this.moveSpeed,
-            });
-            this.time.delayedCall(this.moveSpeed, () => {
-                this.bossText.setText("Hey, great job! Sorry about stepping out like that.")
-                this.bossChat.setVisible(true);
-                this.time.delayedCall(5000, () => {
-                    this.bossText.setText("But here, take this secret note that I had to go get.")
-                    this.giveNote.setVisible(true);
-                    this.time.delayedCall(5000, () => {
-                        this.bossText.setText("Typically I would give you this at the start of the day if I have one.")
-                        this.time.delayedCall(5000, () => {
-                            this.bossText.setText("The note has code on it that when traced will give you the ID number of one of the people you're checking in.");
-                            this.time.delayedCall(5000, () => {
-                                this.bossText.setText("You can give the note to the respective person by clicking on the note and then clicking the give note button.")
-                                this.time.delayedCall(5000, () => {
-                                    this.bossChat.setVisible(false);
-                                    this.input.enabled = true;
-                                    this.bossTimeCount++;
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        }
-        else if (this.bossTimeCount === 7) {
-            this.bossText.setText("Alright, I think it's about time for the next person. Just go ahead and check them in like normal.");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossChat.setVisible(false);
+    this.dialogueOverlay = this.add
+        .rectangle(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            this.cameras.main.width,
+            this.cameras.main.height,
+            0x000000,
+            0
+        )
+        .setDepth(100000000000)
+        .setInteractive();
+
+    this.dialogueOverlay.on("pointerdown", () => {
+        this.skipBossDialogue();
+    });
+}
+
+this.dialogueOverlay.setActive(true);
+this.dialogueOverlay.setVisible(true);
+    this.input.enabled = true;
+    console.log("Boss time called, bossTimeCount:", this.bossTimeCount);
+
+    this.clickallowed = false;
+    this.boss.setVisible(true);
+
+    const sequences: Record<number, any> = {
+
+        0: {
+            moveIn: true,
+            lines: [
+                "Welcome to the company! I'm Steve, your boss.",
+                "Don't worry, I'll be here to help you out through your first day. Just follow my instructions and you'll do great!",
+                "Oh, and if you ever forget anything I tell you go ahead and give me a pat on the shoulder, I'll repeat it for you.",
+                "Alright, let's get started with the first person."
+            ],
+            onComplete: () => {
                 this.nextPerson();
-                this.bossTimeCount++;
-            });
-        }
-        else if (this.bossTimeCount === 8) {
-            this.bossText.setText("Seems like you got the hang of this pretty well! You're doing a great job, keep it up!");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("One more person to check in, then we can go home and play Overwatch... I mean uhhhhh... sleep...");
-                this.time.delayedCall(5000, () => {
-                    this.bossChat.setVisible(false);
-                    this.nextPerson();
-                    this.bossTimeCount++;
+            }
+        },
+
+        1: {
+            lines: [
+                "This is one of your coworkers, make sure to greet them so you're not an ass.",
+                "There is their ID card, go ahead and click it so you can read it better."
+            ],
+            onComplete: () => {
+                this.clickallowed = true;
+            }
+        },
+
+        2: {
+            lines: [
+                "Awesome! Know we know who we're dealing with right now.",
+                "In order to deduce whether or not they are who they say they are, we will have to trace today's code.",
+                "Go ahead and click on today's code to take a peek at it."
+            ],
+
+            actions: {
+                1: () => {
+                    this.notebook.setVisible(true);
+                }
+            },
+
+            onComplete: () => {
+                this.clickallowed = true;
+            }
+        },
+
+        3: {
+            lines: [
+                "Now we have to trace that code to see if his codename on his ID matches what would be printed by the respective print statement in the code.",
+                "If you want to take notes at all, there is a notepad on the left you can click to jot down any thoughts you have.",
+                "Why dont you try jotting down a little something in there to see how it works?"
+            ],
+
+            actions: {
+                1: () => {
+                    this.notepad.setVisible(true);
+                }
+            },
+
+            onComplete: () => {
+                this.clickallowed = true;
+            }
+        },
+
+        4: {
+            lines: [
+                "Once you think you have figured out whether or not they are an impostor, go ahead and hit one of the two buttons on the desk.",
+                "The green button means the ID and code match, so they are a coworker, and the red button means they don't, and are an impostor."
+            ],
+
+            actions: {
+                1: () => {
+                    this.greenButton.setVisible(true);
+                    this.redButton.setVisible(true);
+
+                    this.clickallowed = true;
+                }
+            },
+
+            onComplete: () => {
+                this.clickallowed = true;
+            }
+        },
+
+        5: {
+            lines: [
+                "Nice job! You're a natural at this! Just keep doing what you're doing and you'll do great!",
+                "*ring ring*",
+                "Oh, sorry, I'm getting a call. Here, let me take this and you check in the next person."
+            ],
+
+            onComplete: () => {
+
+                this.tweens.add({
+                    x: this.cameras.main.width + 300,
+                    targets: this.boss
                 });
-            });
-        }
-        else if (this.bossTimeCount === 9) {
-            this.bossText.setText("Hey, great job today! You're a natural at this, I'm sure you'll be promoted in no time!");
-            this.bossChat.setVisible(true);
-            this.time.delayedCall(5000, () => {
-                this.bossText.setText("Alright, go home and get some rest, I'll see you bright and early tomorrow. I hear Dan is bringing donuts!");
-                this.time.delayedCall(5000, () => {
-                    this.bossChat.setVisible(false);
-                    this.tweens.add({
-                        x: this.cameras.main.width + 300,
-                        targets: this.boss,
-                        duration: this.moveSpeed,
-                    });
-                    this.changeScene();
+
+                this.nextPerson();
+            }
+        },
+
+        6: {
+            moveIn: true,
+
+            lines: [
+                "Hey, great job! Sorry about stepping out like that.",
+                "But here, take this secret note that I had to go get.",
+                "Typically I would give you this at the start of the day if I have one.",
+                "The note has code on it that when traced will give you the ID number of one of the people you're checking in.",
+                "You can give the note to the respective person by clicking on the note and then clicking the give note button."
+            ],
+
+            actions: {
+                1: () => {
+                    this.giveNote.setVisible(true);
+                }
+            },
+
+            onComplete: () => {
+                this.clickallowed = true;
+            }
+        },
+
+        7: {
+            lines: [
+                "Alright, I think it's about time for the next person. Just go ahead and check them in like normal."
+            ],
+
+            onComplete: () => {
+                this.nextPerson();
+            }
+        },
+
+        8: {
+            lines: [
+                "Seems like you got the hang of this pretty well! You're doing a great job, keep it up!",
+                "One more person to check in, then we can go home and play Overwatch... I mean uhhhhh... sleep..."
+            ],
+
+            onComplete: () => {
+                this.nextPerson();
+            }
+        },
+
+        9: {
+            lines: [
+                "Hey, great job today! You're a natural at this, I'm sure you'll be promoted in no time!",
+                "Alright, go home and get some rest, I'll see you bright and early tomorrow. I hear Dan is bringing donuts!"
+            ],
+
+            onComplete: () => {
+
+                this.tweens.add({
+                    x: this.cameras.main.width + 300,
+                    targets: this.boss,
+                    duration: this.moveSpeed,
                 });
-            });
+
+                this.changeScene();
+            }
         }
+    };
+
+    this.currentSequence = sequences[this.bossTimeCount];
+
+    if (!this.currentSequence) return;
+
+    this.currentBossLine = 0;
+
+    const startDialogue = () => {
+
+        this.bossChat.setVisible(true);
+
+        this.showBossLine();
+
+    };
+
+    if (this.currentSequence.moveIn) {
+
+        this.tweens.add({
+            x: this.cameras.main.width / 1.33,
+            targets: this.boss,
+            duration: this.moveSpeed,
+            onComplete: startDialogue
+        });
+
+    } else {
+
+        startDialogue();
     }
+}
+
+showBossLine() {
+
+    
+
+    if (this.currentBossLine >= this.currentSequence.lines.length) {
+
+        this.bossChat.setVisible(false);
+
+        if (this.dialogueOverlay) {
+            this.dialogueOverlay.setVisible(false);
+            this.dialogueOverlay.setActive(false);
+        }
+
+        if (this.currentSequence.onComplete) {
+            this.currentSequence.onComplete();
+        }
+
+        this.bossTimeCount++;
+
+        return;
+    }
+
+    this.bossText.setText(
+        this.currentSequence.lines[this.currentBossLine]
+    );
+
+    if (
+        this.currentSequence.actions &&
+        this.currentSequence.actions[this.currentBossLine]
+    ) {
+        this.currentSequence.actions[this.currentBossLine]();
+    }
+
+    const delay =
+        this.currentSequence.delays?.[this.currentBossLine] || 5000;
+
+    this.currentBossLine++;
+
+    this.bossTimer = this.time.delayedCall(delay, () => {
+        this.showBossLine();
+    });
+}
+
+    skipBossDialogue() {
+
+    if (this.skipLocked) return;
+
+    this.skipLocked = true;
+
+    this.time.delayedCall(150, () => {
+        this.skipLocked = false;
+    });
+
+    if (this.bossTimer && !this.bossTimer.hasDispatched) {
+
+        this.bossTimer.remove(false);
+
+        this.showBossLine();
+    }
+}
 }

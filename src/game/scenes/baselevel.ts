@@ -9,6 +9,8 @@ import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
 import notepad from "../objects/notepad";
 import id from "../objects/id";
+import bugFix from "../objects/bugFixTask";
+import { random3bugfix } from "../objects/codes";
 
 export class baseLevel extends Scene {
     moveSpeed: number = 5000;
@@ -19,18 +21,34 @@ export class baseLevel extends Scene {
     numberOfTasks: number;
     numberOfPeople: number;
     numberOfImpostors: number;
-    people: person[];
-    currentPersonIndex: number = 0;
+    people: person[] = [];
+    peopleOrder: person[] = [];
+    currentPersonIndex: number = -1;
     notebook: notebook;
     notepad: notepad;
     score: number = 0;
     maxScore: number = 0;
     giveNote: giveNote;
     currentPerson: person;
+    taskpersonnumbers: number[];
     currentIDCard: id;
     skipButton: Phaser.GameObjects.Text;
     guards: Phaser.GameObjects.Group;
     interactiveObjects: Phaser.GameObjects.GameObject[] = [];
+    dialogueOverlay: any;
+    bossTimeCount: number = 0;
+    boss: person;
+    currentBugFix: bugFix;
+    currentSequence: any;
+    currentBossLine: number;
+    bossChat: any;
+    bossText: any;
+    bossTimer: Phaser.Time.TimerEvent;
+    skipLocked: any;
+    desk: Phaser.GameObjects.Image;
+    clickallowed: boolean = false;
+    bugFixTasks: { problem: string; answer: number }[] = [];
+    currentBugIndex: any;
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
         this.numberOfPeople = numberOfPeople;
@@ -41,11 +59,19 @@ export class baseLevel extends Scene {
 
     create() {
 
+        let randomindexlist: number[] = []
+        for(let i = 0; i < this.numberOfTasks-1; i++){
+            let randomIndex = Math.floor(Math.random() * this.numberOfPeople);
+                while(randomindexlist.includes(randomIndex)){
+                    randomIndex = Math.floor(Math.random() * this.numberOfPeople)
+                }
+                randomindexlist.push(randomIndex);
+        }
+        this.currentBugIndex = 0;
 
         this.maxScore = this.numberOfTasks + this.numberOfPeople; // Max score is total number of correct decisions possible
         // Explicitly enable input on the scene
         this.input.enabled = true;
-        this.currentPerson = this.people[0];
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
@@ -55,14 +81,22 @@ export class baseLevel extends Scene {
         this.background = this.add.image(
             screenWidth / 2,
             screenHeight / 2,
-            "desk+background",
+            "backgroundnodesk",
         );
         this.background.displayWidth = screenWidth;
         this.background.displayHeight = screenHeight;
         this.background.setAlpha(1);
 
+        this.desk = this.add.image(
+                    screenWidth / 2,
+                    screenHeight * 0.75,
+                    "desk",
+                ).setScale(0.75).setDepth(0.99);
+        
         this.fpsText = new FpsText(this);
-
+        
+        this.boss = new person(this, screenWidth + 300, screenHeight / 2.75, false, true).setVisible(false).setDepth(0.51).setScale(0.5);   
+        
         const impostornumbers: number[] = [];
         for (let i = 0; i < this.numberOfImpostors; i++) {
             const randomNum = Math.floor(Math.random() * this.numberOfPeople);
@@ -91,9 +125,28 @@ export class baseLevel extends Scene {
                 newPerson = updatedPerson;
             }
             this.people.push(newPerson);
+            this.peopleOrder.push(newPerson);
+
+            if (randomindexlist.includes(i)) {
+
+        const kiernanPerson = new person(
+            this,
+            screenWidth / 2,
+            screenHeight / 2.75,
+            false,
+            false,
+            true
+        )
+        .setVisible(false)
+        .setDepth(0.51)
+        .setScale(0.1);
+
+        kiernanPerson.defaultscale = 1;
+        this.peopleOrder.push(kiernanPerson);
+
+}       
+
         }
-        
-        this.currentPerson = this.people[0];
 
         for (const tempperson of this.people) {
             if (tempperson.impostor) {
@@ -107,6 +160,7 @@ export class baseLevel extends Scene {
                 color: "#000000",
             })
             .setInteractive({ useHandCursor: true })
+            .setDepth(10000000000000000000)
             .on("pointerdown", () => {
                 console.log("Skip button clicked");
                 this.changeScene();
@@ -150,36 +204,14 @@ export class baseLevel extends Scene {
             screenHeight / 1.35,
             ``,
             0,
-        ).setDepth(1);
-
-        this.currentPerson.setVisible(true);
-        // Do not set currentPerson as interactive
-        this.tweens.add({
-            targets: this.currentPerson,
-            scale: 3,
-            duration: this.moveSpeed,
-            ease: "Back.Out",
-        });
-        this.time.delayedCall(1, () => {
-            this.createIDCard();
-        });
+        ).setDepth(1)
+        .setVisible(false);
 
         // Add a rectangle that fills the bottom half of the screen
 
         // Desk rectangle
         const deskY = screenHeight * 0.75;
-        const tempdesk = this.add
-            .rectangle(
-                screenWidth / 2,
-                deskY, // center of bottom half
-                screenWidth,
-                screenHeight / 2,
-                0xffffff,
-            )
-            .setStrokeStyle(3, 0x000000)
-            .setDepth(0.4)
-            .setVisible(false);
-        // Do not set desk as interactive at all
+        
 
         // Add two buttons on the desk at the very end, with highest depth
         const buttonRadius = 40;
@@ -216,11 +248,32 @@ export class baseLevel extends Scene {
                 this.personAccepted();
             });
 
+        this.bossChat = this.add
+        .container(this.cameras.main.width / 1.75, this.cameras.main.height / 5)
+        .setDepth(1)
+        .setVisible(false);
+        const bossTextBackground = this.add
+        .rectangle(0, 0, 400, 100, 0xffffff)
+        .setStrokeStyle(3, 0x000000);
+        this.bossText = this.add.text(-180, -40, "", {
+            fontSize: "18px",
+            color: "#000000",
+            wordWrap: { width: 350 },
+        });
+        this.bossChat.add([bossTextBackground, this.bossText]);
+
+        this.boss.setInteractive({ useHandCursor: true });
+        this.boss.on("pointerdown", () => {
+            this.bossChat.setVisible(!this.bossChat.visible);
+        });
+
 
         EventBus.emit("current-scene-ready", this);
 
         //fix errors with unused variables
-        console.log(tempdesk, redButton, greenButton);
+        console.log(redButton, greenButton);
+
+        this.bossTime()
     }
 
     update() {
@@ -234,21 +287,26 @@ export class baseLevel extends Scene {
     }
 
     personAccepted() {
-        this.input.enabled = false; // Disable input while moving offscreen
-        if (!this.currentPerson.impostor) {
-            this.score++;
+        if (this.clickallowed){
+            this.input.enabled = false; // Disable input while moving offscreen
+            this.currentIDCard.destroy();
+            if (!this.currentPerson.impostor) {
+                this.score++;
+            }
+            this.tweens.add({
+                targets: this.currentPerson,
+                x: this.cameras.main.width + 200, // Move off-screen to the right
+                y: this.currentPerson.y,
+                duration: this.moveSpeed,
+                ease: "Power2",
+            });
+            this.nextPerson();
         }
-        this.tweens.add({
-            targets: this.currentPerson,
-            x: this.cameras.main.width + 200, // Move off-screen to the right
-            y: this.currentPerson.y,
-            duration: this.moveSpeed,
-            ease: "Power2",
-        });
-        this.nextPerson();
+        
     }
 
     personRejected() {
+        if (this.clickallowed){
         // Wait 3 seconds before moving offscreen to the left
         this.currentIDCard.destroy(); // Remove ID card when person is rejected
         this.input.enabled = false; // Disable input while waiting
@@ -287,20 +345,30 @@ export class baseLevel extends Scene {
             });
         });
     }
+    }
     nextPerson() {
         this.currentPersonIndex++;
         this.time.delayedCall(this.moveSpeed, () => {
-            if (this.currentPersonIndex < this.people.length) {
-                this.currentPerson = this.people[this.currentPersonIndex];
+            if (this.currentPersonIndex < this.peopleOrder.length) {
+                this.currentPerson = this.peopleOrder[this.currentPersonIndex];
                 this.currentPerson.setVisible(true);
                 this.tweens.add({
                     targets: this.currentPerson,
-                    scale: 3,
+                    scale: this.currentPerson.defaultscale,
                     duration: this.moveSpeed,
                     ease: "Back.Out",
                 });
-                this.createIDCard();
-                this.input.enabled = true; // Re-enable input for the next person
+                console.log(this.currentPerson);
+                console.log("is kiernan?", this.currentPerson.kiernan);
+                this.time.delayedCall(4000, () => {
+                    if (this.currentPerson.kiernan){
+                        this.bossTime()
+                    } else {
+                        this.createIDCard();
+                        this.clickallowed = true;
+                    }
+                    this.input.enabled = true;
+                });
             } else {
                 console.log("All people processed. Final score:", this.score);
                 this.changeScene();
@@ -318,4 +386,176 @@ export class baseLevel extends Scene {
             );
             this.currentIDCard.setDepth(1);
         }
+    bossTime() {
+        if (!this.dialogueOverlay) {
+
+        this.dialogueOverlay = this.add
+            .rectangle(
+                this.cameras.main.width / 2,
+                this.cameras.main.height / 2,
+                this.cameras.main.width,
+                this.cameras.main.height,
+                0x000000,
+                0
+            )
+            .setDepth(100000000000)
+            .setInteractive();
+
+        this.dialogueOverlay.on("pointerdown", () => {
+            this.skipBossDialogue();
+            });
+        }
+
+        this.dialogueOverlay.setActive(true);
+        this.dialogueOverlay.setVisible(true);
+        this.input.enabled = true;
+        console.log("Boss time called, bossTimeCount:", this.bossTimeCount);
+
+        this.boss.setVisible(true);
+
+        const sequences: Record<number, any> = {
+
+            0: {
+                moveIn: true,
+                lines: [
+                    "Hey welcome back!",
+                    "I have another note for you today. Same as usual, give it to whoever's ID it traces to.",
+                    "Good luck today!"
+                ],
+                onComplete: () => {
+                    this.giveNote.visible = true;
+                    this.tweens.add({
+                        x: this.cameras.main.width + 300,
+                        targets: this.boss
+                    });
+                    this.nextPerson();
+                }
+            },
+            1: {
+                lines: [
+                    "Yo what's up buddy!",
+                    "See I'm having this issue with my code and I got no clue what's going wrong.",
+                    "Would you mind taking a peek at it and letting me know what the problem is?",
+                    "Just go ahead and click on the line where the error occurrs."
+                ],
+                onComplete: () => {
+                    const task = this.bugFixTasks[this.currentBugIndex];
+                    this.currentBugFix = new bugFix(
+                        this,
+                        this.cameras.main.width / 2,
+                        this.cameras.main.height / 2,
+                        task.problem,
+                        task.answer,
+                        (correct: boolean) => {
+
+                            if (correct) this.score++;
+                            
+                            this.currentBugIndex++;
+
+                            this.tweens.add({
+                                targets: this.currentPerson,
+                                x: this.cameras.main.width + 200,
+                                y: this.currentPerson.y,
+                                duration: this.moveSpeed,
+                                ease: "Power2",
+                            });
+
+                            this.nextPerson();
+                        }
+                    );
+                }
+            }
+        };
+
+        this.currentSequence =
+        sequences[this.bossTimeCount > 0 ? 1 : 0];
+
+        if (!this.currentSequence) return;
+
+        this.currentBossLine = 0;
+
+        const startDialogue = () => {
+
+            this.bossChat.setVisible(true);
+
+            this.showBossLine();
+
+        };
+
+        if (this.currentSequence.moveIn) {
+
+            this.tweens.add({
+                x: this.cameras.main.width / 1.33,
+                targets: this.boss,
+                duration: this.moveSpeed,
+                onComplete: startDialogue
+            });
+
+        } else {
+
+            startDialogue();
+        }
+    }
+
+    showBossLine() {
+
+    
+
+        if (this.currentBossLine >= this.currentSequence.lines.length) {
+
+            this.bossChat.setVisible(false);
+
+            if (this.dialogueOverlay) {
+                this.dialogueOverlay.setVisible(false);
+                this.dialogueOverlay.setActive(false);
+            }
+
+            if (this.currentSequence.onComplete) {
+                this.currentSequence.onComplete();
+            }
+
+            this.bossTimeCount++;
+
+            return;
+        }
+
+        this.bossText.setText(
+            this.currentSequence.lines[this.currentBossLine]
+        );
+
+        if (
+            this.currentSequence.actions &&
+            this.currentSequence.actions[this.currentBossLine]
+        ) {
+            this.currentSequence.actions[this.currentBossLine]();
+        }
+
+        const delay =
+            this.currentSequence.delays?.[this.currentBossLine] || 5000;
+
+        this.currentBossLine++;
+
+        this.bossTimer = this.time.delayedCall(delay, () => {
+            this.showBossLine();
+        });
+    }
+
+        skipBossDialogue() {
+
+        if (this.skipLocked) return;
+
+        this.skipLocked = true;
+
+        this.time.delayedCall(150, () => {
+            this.skipLocked = false;
+        });
+
+        if (this.bossTimer && !this.bossTimer.hasDispatched) {
+
+            this.bossTimer.remove(false);
+
+            this.showBossLine();
+        }
+    }
+    
 }
