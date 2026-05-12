@@ -31,7 +31,7 @@ int main() {
     return 0;
 }`, randomperson.idNumber);
 
-            ({problem: this.bugfixproblem, answer: this.bugfixanswer} = random3bugfix());
+            this.bugFixTasks.push(random3bugfix());
 
         }
         

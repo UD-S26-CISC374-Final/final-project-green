@@ -41,7 +41,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
 
     openNotebook() {
         // eslint-disable-next-line prefer-const
-        let closeButton: Phaser.GameObjects.Text;
+        
 
         const overlay = this.scene.add
             .rectangle(
@@ -57,15 +57,19 @@ export default class giveNote extends Phaser.GameObjects.Container {
             .on("pointerdown", () => {
                 // Swallow clicks while the popup is open
             });
+
+        const popupWidth = 500;
+        const popupHeight = 550;
+
         const notebookContent = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2,
-                300,
-                400,
+                popupWidth,
+                popupHeight,
                 0xffffff,
             )
-            .setStrokeStyle(2, 0x000000)
+            .setStrokeStyle(3, 0x000000)
             .setDepth(11);
         const codesText = this.scene.add
             .text(
@@ -73,66 +77,106 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 this.scene.cameras.main.height / 2 - 25,
                 "Give This To The Following ID Number:\n\n" + this.codes,
                 {
-                    fontSize: "12px",
+                    fontSize: "14px",
                     color: "#000000",
+                    wordWrap: { width: popupWidth - 60 }
                 },
             )
-            .setOrigin(0.5, 0.5)
+            .setOrigin(0.5, 0)
             .setDepth(13);
+
+        const buttonY = this.scene.cameras.main.height / 2 + 200
+
         const giveButton = this.scene.add
             .text(
-                this.scene.cameras.main.width / 2,
-                this.scene.cameras.main.height / 2 + 100,
+                this.scene.cameras.main.width / 2 - 100,
+                buttonY,
                 "Give Note",
                 {
                     fontSize: "20px",
                     color: "#000000",
+                    backgroundColor: "#2e8b57",
+                    padding: {
+                        left: 20,
+                        right: 20,
+                        top: 10,
+                        bottom: 10
+                    }
                 },
             )
+            .setOrigin(0.5)
+            .setDepth(12)
             .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => {
-                const sceneWithPerson = this.scene as Phaser.Scene & {
-                    currentPerson?: { idNumber: number };
-                };
-                if (
-                    sceneWithPerson.currentPerson &&
-                    sceneWithPerson.currentPerson.idNumber === this.correctId
-                ) {
-                    (this.scene as Phaser.Scene & { score: number }).score += 1;
-                }
-                this.scene.children.remove(overlay);
-                this.scene.children.remove(notebookContent);
-                this.scene.children.remove(closeButton);
-                this.scene.children.remove(codesText);
-                this.scene.children.remove(giveButton); 
-                this.setVisible(false);
-            });
-        giveButton.setOrigin(0.5, 0.5).setDepth(12);
-        closeButton = this.scene.add
+
+        const closeButton = this.scene.add
             .text(
-                this.scene.cameras.main.width / 2,
-                this.scene.cameras.main.height / 2 + 150,
+                this.scene.cameras.main.width / 2 + 100,
+                buttonY,
                 "Close",
                 {
                     fontSize: "20px",
                     color: "#000000",
+                    backgroundColor: "#666666",
+                    padding: {
+                        left: 20,
+                        right: 20,
+                        top: 10,
+                        bottom: 10
+                    }
                 },
             )
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => {
-                if (!this.emitted) {
-                    console.log("emitting closeGiveNote");
-                    this.scene.events.emit('closeGiveNote');
-                    this.emitted = true;
-                }
-                this.scene.children.remove(overlay);
-                this.scene.children.remove(notebookContent);
-                this.scene.children.remove(closeButton);
-                this.scene.children.remove(codesText);
-                this.scene.children.remove(giveButton);
+            .setOrigin(0.5)
+            .setDepth(12)
+            .setInteractive({ useHandCursor: true });
+            
+        giveButton.on("pointerover", () => {
+            giveButton.setStyle({ backgroundColor: "#3cb371" });
+        });
+
+        giveButton.on("pointerout", () => {
+            giveButton.setStyle({ backgroundColor: "#2e8b57" });
+        });
+
+        closeButton.on("pointerover", () => {
+            closeButton.setStyle({ backgroundColor: "#888888" });
+        });
+
+        closeButton.on("pointerout", () => {
+            closeButton.setStyle({ backgroundColor: "#666666" });
+        });
+            
+            
+        giveButton.on("pointerdown", () => {
+            const sceneWithPerson = this.scene as Phaser.Scene & {
+                currentPerson?: { idNumber: number };
+            };
+            if (
+                sceneWithPerson.currentPerson &&
+                sceneWithPerson.currentPerson.idNumber === this.correctId
+            ) {
+                (this.scene as Phaser.Scene & { score: number }).score += 1;
+            }
+            overlay.destroy();
+            notebookContent.destroy();
+            codesText.destroy();
+            giveButton.destroy();
+            closeButton.destroy(); 
+            this.setVisible(false);
+            });
+        
+        closeButton.on("pointerdown", () => {
+            if (!this.emitted) {
+                console.log("emitting closeGiveNote");
+                this.scene.events.emit('closeGiveNote');
+                this.emitted = true;
+            }
+            overlay.destroy();
+            notebookContent.destroy();
+            codesText.destroy();
+            giveButton.destroy();
+            closeButton.destroy();
                 
             });
-        closeButton.setOrigin(0.5, 0.5).setDepth(12);
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;

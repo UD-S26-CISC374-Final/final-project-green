@@ -41,10 +41,17 @@ int main() {
 
     return 0;
 }`, randomperson.idNumber);
-        ({problem: this.bugfixproblem, answer: this.bugfixanswer} = random5bugfix());
-        while(this.bugfixproblem === this.randombugfixproblem2) {
-            ({problem: this.randombugfixproblem2, answer: this.randombugfixanswer2} = random5bugfix());
-        }
+    const first = random5bugfix();
+    this.bugFixTasks.push(first)
+
+    let second = random5bugfix();
+
+    // ensure different problem
+    while (second.problem === first.problem) {
+        second = random5bugfix();
+    }
+
+    this.bugFixTasks.push(second)
         }
         
 }

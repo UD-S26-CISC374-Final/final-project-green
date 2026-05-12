@@ -2,21 +2,24 @@ export default class bugFix extends Phaser.GameObjects.Container {
 
     public codes: string;
     public correctLine: number;
-    public overlay: Phaser.GameObjects.Rectangle
+    public overlay: Phaser.GameObjects.Rectangle;
+
+    private onComplete?: (correct: boolean) => void;
 
     constructor(
         scene: Phaser.Scene,
         x: number,
         y: number,
-        codes: string = "Hi its me broken code. \n\nand another line",
-        correctLine: number = 1
+        codes: string = "",
+        correctLine: number = 1,
+        onComplete?: (correct: boolean) => void
+
     ) {
         super(scene, x, y);
 
         this.codes = codes;
-
-        // line numbers start at 1
         this.correctLine = correctLine;
+        this.onComplete = onComplete;
 
         this.overlay = this.scene.add
             .rectangle(
@@ -132,18 +135,10 @@ export default class bugFix extends Phaser.GameObjects.Container {
 
             console.log("Clicked line:", lineNumber);
 
-            if (lineNumber === this.correctLine) {
+            const correct = lineNumber === this.correctLine;
 
-                console.log("Correct!");
 
-                (this.scene as Phaser.Scene & { score: number }).score += 1;
-
-            } else {
-
-                console.log("Wrong!");
-            }
-
-            this.scene.events.emit("bugFixed");
+            this.onComplete?.(correct);
 
             this.overlay.destroy();
 

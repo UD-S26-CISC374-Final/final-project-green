@@ -47,8 +47,8 @@ export class baseLevel extends Scene {
     skipLocked: any;
     desk: Phaser.GameObjects.Image;
     clickallowed: boolean = false;
-    bugfixproblem: string;
-    bugfixanswer: number;
+    bugFixTasks: any;
+    currentBugIndex: any;
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
         this.numberOfPeople = numberOfPeople;
@@ -448,7 +448,30 @@ export class baseLevel extends Scene {
                     "Just go ahead and click on the line where the error occurrs."
                 ],
                 onComplete: () => {
-                    this.currentBugFix = new bugFix(this, this.camera.width/2, this.camera.height/2, this.bugfixproblem, this.bugfixanswer);
+                    const task = this.bugFixTasks[this.currentBugIndex];
+                    this.currentBugFix = new bugFix(
+                        this,
+                        this.cameras.main.width / 2,
+                        this.cameras.main.height / 2,
+                        task.problem,
+                        task.answer,
+                        (correct: boolean) => {
+
+                            if (correct) this.score++;
+                            
+                            this.currentBugIndex++;
+
+                            this.tweens.add({
+                                targets: this.currentPerson,
+                                x: this.cameras.main.width + 200,
+                                y: this.currentPerson.y,
+                                duration: this.moveSpeed,
+                                ease: "Power2",
+                            });
+
+                            this.nextPerson();
+                        }
+                    );
                 }
             }
         };

@@ -39,6 +39,6 @@ int main() {
     return 0;
 }`, randomperson.idNumber);
 
-    ({problem: this.bugfixproblem, answer: this.bugfixanswer} = random4bugfix());
+    this.bugFixTasks.push(random4bugfix());
         }
 }
