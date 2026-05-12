@@ -47,7 +47,7 @@ export class baseLevel extends Scene {
     skipLocked: any;
     desk: Phaser.GameObjects.Image;
     clickallowed: boolean = false;
-    bugFixTasks: any;
+    bugFixTasks: { problem: string; answer: number }[] = [];
     currentBugIndex: any;
     constructor(numberOfPeople: number, numberOfImpostors: number, numberOfTasks: number, levelName: string) {
         super(levelName);
@@ -67,6 +67,7 @@ export class baseLevel extends Scene {
                 }
                 randomindexlist.push(randomIndex);
         }
+        this.currentBugIndex = 0;
 
         this.maxScore = this.numberOfTasks + this.numberOfPeople; // Max score is total number of correct decisions possible
         // Explicitly enable input on the scene
@@ -143,16 +144,6 @@ export class baseLevel extends Scene {
         kiernanPerson.defaultscale = 1;
         this.peopleOrder.push(kiernanPerson);
 
-        this.events.once("bugFixed", () => {
-            this.tweens.add({
-                targets: this.currentPerson,
-                x: this.cameras.main.width + 200, // Move off-screen to the right
-                y: this.currentPerson.y,
-                duration: this.moveSpeed,
-                ease: "Power2",
-            });
-                this.nextPerson();
-            });
 }       
 
         }
