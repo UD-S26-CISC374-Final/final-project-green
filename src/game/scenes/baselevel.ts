@@ -140,10 +140,18 @@ export class baseLevel extends Scene {
 
         kiernanPerson.defaultscale = 1;
         this.peopleOrder.push(kiernanPerson);
-}       
-        this.events.on("bugFixed", () => {
+
+        this.events.once("bugFixed", () => {
+            this.tweens.add({
+                targets: this.currentPerson,
+                x: this.cameras.main.width + 200, // Move off-screen to the right
+                y: this.currentPerson.y,
+                duration: this.moveSpeed,
+                ease: "Power2",
+            });
                 this.nextPerson();
             });
+}       
 
         }
 

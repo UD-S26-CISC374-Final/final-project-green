@@ -97,7 +97,7 @@ export default class bugFix extends Phaser.GameObjects.Container {
                     console.log("Correct!");
 
                     // add to scene score
-                    (this.scene as any).score++;
+                    (this.scene as Phaser.Scene & { score: number }).score += 1;
                 }
 
                 else {
