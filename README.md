@@ -1,16 +1,15 @@
 # Game Name
 
-TEXT GOES HERE
+That's Not My Programmer
 
 # Team Color
 
-TEXT GOES HERE
+Green
 
 # Developers
 
-* Name (email)
-* Name (email)
-* Name (email)
+* Andrew Shaffer (dshaffer@udel.edu)
+* Joanna Amoah (joannaea@udel.edu)
 
 # Blurb
 
