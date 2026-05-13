@@ -1,6 +1,11 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { SCORE, MAX_SCORE, resetScore, TOTAL_MAX_SCORE } from "../objects/score";
+import {
+    SCORE,
+    MAX_SCORE,
+    resetScore,
+    TOTAL_MAX_SCORE,
+} from "../objects/score";
 
 export class EndOfDay extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -8,6 +13,7 @@ export class EndOfDay extends Scene {
     endOfDayText: Phaser.GameObjects.Text;
     scoreText: Phaser.GameObjects.Text;
     nextDayButton: Phaser.GameObjects.Text;
+    levelSelectButton: Phaser.GameObjects.Text;
 
     constructor() {
         super("EndOfDay");
@@ -15,13 +21,15 @@ export class EndOfDay extends Scene {
 
     create() {
         this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0xff0000);
+        this.camera.setBackgroundColor(0x000000);
 
-        this.background = this.add.image(512, 384, "background");
-        this.background.setAlpha(0.5);
+        this.background = this.add
+            .image(this.camera.centerX, this.camera.centerY, "todays-summary")
+            .setOrigin(0.5)
+            .setDisplaySize(this.camera.width, this.camera.height);
 
         this.endOfDayText = this.add
-            .text(512, 384, "End of Day", {
+            .text(512, 384, "Today's Summary", {
                 fontFamily: "Arial Black",
                 fontSize: 64,
                 color: "#ffffff",
@@ -55,9 +63,32 @@ export class EndOfDay extends Scene {
             })
             .setOrigin(0.5)
             .setDepth(100)
-            .setInteractive()
+            .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 this.changeScene();
+            });
+
+        this.levelSelectButton = this.add
+            .text(512, 550, "Level Select", {
+                fontFamily: "Arial Black",
+                fontSize: 24,
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 4,
+                align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(100)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => {
+                resetScore();
+                this.scene.start("LevelSelect");
+            })
+            .on("pointerover", () => {
+                this.levelSelectButton.setStyle({ color: "#ffff00" });
+            })
+            .on("pointerout", () => {
+                this.levelSelectButton.setStyle({ color: "#ffffff" });
             });
 
         EventBus.emit("current-scene-ready", this);
