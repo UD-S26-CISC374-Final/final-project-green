@@ -5,6 +5,11 @@ import {
     MAX_SCORE,
     resetScore,
     TOTAL_MAX_SCORE,
+    EMPLOYEES_SENT_TO_WORK,
+    INCORRECTLY_KICKED_OUT,
+    CORRECT_NOTE_GIVEN,
+    CODE_FIXED,
+    LEVEL_HAS_CODE_FIX,
 } from "../objects/score";
 
 export class EndOfDay extends Scene {
@@ -14,6 +19,7 @@ export class EndOfDay extends Scene {
     scoreText: Phaser.GameObjects.Text;
     nextDayButton: Phaser.GameObjects.Text;
     levelSelectButton: Phaser.GameObjects.Text;
+    summaryMessage: Phaser.GameObjects.Text[] = [];
 
     constructor() {
         super("EndOfDay");
@@ -29,9 +35,9 @@ export class EndOfDay extends Scene {
             .setDisplaySize(this.camera.width, this.camera.height);
 
         this.endOfDayText = this.add
-            .text(512, 384, "Today's Summary", {
+            .text(512, 100, "Today's Summary", {
                 fontFamily: "Arial Black",
-                fontSize: 64,
+                fontSize: 48,
                 color: "#ffffff",
                 stroke: "#000000",
                 strokeThickness: 8,
@@ -40,8 +46,28 @@ export class EndOfDay extends Scene {
             .setOrigin(0.5)
             .setDepth(100);
 
+        let yOffset = 170;
+        const messages = this.generateSummaryMessages();
+
+        for (const message of messages) {
+            const messageText = this.add
+                .text(512, yOffset, message, {
+                    fontFamily: "Arial Black",
+                    fontSize: 18,
+                    color: "#ffffff",
+                    stroke: "#000000",
+                    strokeThickness: 3,
+                    align: "center",
+                    wordWrap: { width: 800 },
+                })
+                .setOrigin(0.5)
+                .setDepth(100);
+            this.summaryMessage.push(messageText);
+            yOffset += 50;
+        }
+
         this.scoreText = this.add
-            .text(512, 450, `Today's Score: ${SCORE}/${MAX_SCORE}`, {
+            .text(512, 400, `Today's Score: ${SCORE}/${MAX_SCORE}`, {
                 fontFamily: "Arial Black",
                 fontSize: 32,
                 color: "#ffffff",
@@ -53,7 +79,7 @@ export class EndOfDay extends Scene {
             .setDepth(100);
 
         this.nextDayButton = this.add
-            .text(512, 500, "Next Day", {
+            .text(512, 480, "Next Day", {
                 fontFamily: "Arial Black",
                 fontSize: 24,
                 color: "#ffffff",
@@ -92,6 +118,44 @@ export class EndOfDay extends Scene {
             });
 
         EventBus.emit("current-scene-ready", this);
+    }
+
+    generateSummaryMessages(): string[] {
+        const messages: string[] = [];
+        const employeesSent = EMPLOYEES_SENT_TO_WORK;
+        const incorrectlyKickedOut = INCORRECTLY_KICKED_OUT;
+        const correctNoteGiven = CORRECT_NOTE_GIVEN;
+        const codeFixed = CODE_FIXED;
+
+        // Employee summary message
+        if (incorrectlyKickedOut > 0) {
+            const employeeWord =
+                incorrectlyKickedOut === 1 ? "employee" : "employees";
+            messages.push(
+                `${incorrectlyKickedOut} ${employeeWord} didn't show up to work today.`,
+            );
+        } else if (employeesSent > 0) {
+            const employeeWord = employeesSent === 1 ? "employee" : "employees";
+            messages.push(
+                `${employeesSent} ${employeeWord} successfully went to work and completed their assignments.`,
+            );
+        }
+
+        // Boss thank you note
+        if (correctNoteGiven) {
+            messages.push(
+                'Boss: "Thank you for getting that note to the right person!"',
+            );
+        }
+
+        // Server status message
+        if (codeFixed) {
+            messages.push("The servers are running smoothly.");
+        } else if (LEVEL_HAS_CODE_FIX) {
+            messages.push("The company's servers had an outage.");
+        }
+
+        return messages.length > 0 ? messages : ["Great job out there!"];
     }
 
     changeScene() {

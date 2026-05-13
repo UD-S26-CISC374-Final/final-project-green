@@ -1,21 +1,26 @@
 import { random3bugfix, random3Code } from "../objects/codes";
 import { baseLevel } from "./baselevel";
+import { setLevelHasCodeFix } from "../objects/score";
 
 export class Level3 extends baseLevel {
     constructor() {
-        super(7,3,2,"Level3");
+        super(7, 3, 2, "Level3");
     }
     create(): void {
-            super.create();
-            this.notebook.setText(random3Code(this.people));
+        super.create();
+        setLevelHasCodeFix(true);
+        this.notebook.setText(random3Code(this.people));
 
-            let randomperson = this.people[Math.floor(Math.random() * this.people.length)];
+        let randomperson =
+            this.people[Math.floor(Math.random() * this.people.length)];
         while (randomperson.impostor) {
-            randomperson = this.people[Math.floor(Math.random() * this.people.length)]
+            randomperson =
+                this.people[Math.floor(Math.random() * this.people.length)];
         }
-        const start = ((randomperson.idNumber + 9) / 2) - 4;
+        const start = (randomperson.idNumber + 9) / 2 - 4;
 
-        this.giveNote.setText(`#include <stdio.h>
+        this.giveNote.setText(
+            `#include <stdio.h>
 
 int main() {
 
@@ -29,10 +34,10 @@ int main() {
     printf("Final ID: %d\\n", y);
 
     return 0;
-}`, randomperson.idNumber);
+}`,
+            randomperson.idNumber,
+        );
 
-            this.bugFixTasks.push(random3bugfix());
-
-        }
-        
+        this.bugFixTasks.push(random3bugfix());
+    }
 }

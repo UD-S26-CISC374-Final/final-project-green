@@ -1,3 +1,4 @@
+import { setCorrectNoteGiven } from "../objects/score";
 export default class giveNote extends Phaser.GameObjects.Container {
     public rect: Phaser.GameObjects.Rectangle;
     private text: Phaser.GameObjects.Text;
@@ -40,7 +41,6 @@ export default class giveNote extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
-
         const overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
@@ -77,13 +77,13 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 {
                     fontSize: "14px",
                     color: "#000000",
-                    wordWrap: { width: popupWidth - 60 }
+                    wordWrap: { width: popupWidth - 60 },
                 },
             )
             .setOrigin(0.5, 0)
             .setDepth(13);
 
-        const buttonY = this.scene.cameras.main.height / 2 + 200
+        const buttonY = this.scene.cameras.main.height / 2 + 200;
 
         const giveButton = this.scene.add
             .text(
@@ -98,35 +98,30 @@ export default class giveNote extends Phaser.GameObjects.Container {
                         left: 20,
                         right: 20,
                         top: 10,
-                        bottom: 10
-                    }
-                },
-            )
-            .setOrigin(0.5)
-            .setDepth(12)
-            .setInteractive({ useHandCursor: true })
-
-        const closeButton = this.scene.add
-            .text(
-                this.scene.cameras.main.width / 2 + 100,
-                buttonY,
-                "Close",
-                {
-                    fontSize: "20px",
-                    color: "#000000",
-                    backgroundColor: "#666666",
-                    padding: {
-                        left: 20,
-                        right: 20,
-                        top: 10,
-                        bottom: 10
-                    }
+                        bottom: 10,
+                    },
                 },
             )
             .setOrigin(0.5)
             .setDepth(12)
             .setInteractive({ useHandCursor: true });
-            
+
+        const closeButton = this.scene.add
+            .text(this.scene.cameras.main.width / 2 + 100, buttonY, "Close", {
+                fontSize: "20px",
+                color: "#000000",
+                backgroundColor: "#666666",
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: 10,
+                    bottom: 10,
+                },
+            })
+            .setOrigin(0.5)
+            .setDepth(12)
+            .setInteractive({ useHandCursor: true });
+
         giveButton.on("pointerover", () => {
             giveButton.setStyle({ backgroundColor: "#3cb371" });
         });
@@ -142,8 +137,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
         closeButton.on("pointerout", () => {
             closeButton.setStyle({ backgroundColor: "#666666" });
         });
-            
-            
+
         giveButton.on("pointerdown", () => {
             const sceneWithPerson = this.scene as Phaser.Scene & {
                 currentPerson?: { idNumber: number };
@@ -153,19 +147,20 @@ export default class giveNote extends Phaser.GameObjects.Container {
                 sceneWithPerson.currentPerson.idNumber === this.correctId
             ) {
                 (this.scene as Phaser.Scene & { score: number }).score += 1;
+                setCorrectNoteGiven(true);
             }
             overlay.destroy();
             notebookContent.destroy();
             codesText.destroy();
             giveButton.destroy();
-            closeButton.destroy(); 
+            closeButton.destroy();
             this.setVisible(false);
-            });
-        
+        });
+
         closeButton.on("pointerdown", () => {
             if (!this.emitted) {
                 console.log("emitting closeGiveNote");
-                this.scene.events.emit('closeGiveNote');
+                this.scene.events.emit("closeGiveNote");
                 this.emitted = true;
             }
             overlay.destroy();
@@ -173,8 +168,7 @@ export default class giveNote extends Phaser.GameObjects.Container {
             codesText.destroy();
             giveButton.destroy();
             closeButton.destroy();
-                
-            });
+        });
     }
     checkGive(idNumber: number) {
         return idNumber === this.correctId;
