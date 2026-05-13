@@ -1,6 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import { TOTAL_SCORE, TOTAL_MAX_SCORE } from "../objects/score";
+import { scoreState } from "../objects/score";
 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -32,14 +32,19 @@ export class GameOver extends Scene {
             .setDepth(100);
 
         this.scoreText = this.add
-            .text(512, 450, `Final Score: ${TOTAL_SCORE}/${TOTAL_MAX_SCORE}`, {
-                fontFamily: "Arial Black",
-                fontSize: 32,
-                color: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 4,
-                align: "center",
-            })
+            .text(
+                512,
+                450,
+                `Final Score: ${scoreState.TOTAL_SCORE}/${scoreState.TOTAL_MAX_SCORE}`,
+                {
+                    fontFamily: "Arial Black",
+                    fontSize: 32,
+                    color: "#ffffff",
+                    stroke: "#000000",
+                    strokeThickness: 4,
+                    align: "center",
+                },
+            )
             .setOrigin(0.5)
             .setDepth(100);
 

@@ -332,6 +332,9 @@ export class baseLevel extends Scene {
             if (!this.currentPerson.impostor) {
                 this.score++;
                 incrementEmployeesSentToWork();
+                console.log(
+                    "baselevel personAccepted: incremented employees sent to work",
+                );
             }
             this.tweens.add({
                 targets: this.currentPerson,
@@ -351,8 +354,14 @@ export class baseLevel extends Scene {
             this.input.enabled = false; // Disable input while waiting
             if (this.currentPerson.impostor) {
                 this.score++;
+                console.log(
+                    "baselevel personRejected: impostor correctly rejected",
+                );
             } else {
                 incrementIncorrectlyKickedOut();
+                console.log(
+                    "baselevel personRejected: incorrectly kicked out employee",
+                );
             }
             this.tweens.add({
                 targets: [

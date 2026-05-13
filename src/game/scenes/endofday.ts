@@ -1,16 +1,6 @@
 import { EventBus } from "../event-bus";
 import { Scene } from "phaser";
-import {
-    SCORE,
-    MAX_SCORE,
-    resetScore,
-    TOTAL_MAX_SCORE,
-    EMPLOYEES_SENT_TO_WORK,
-    INCORRECTLY_KICKED_OUT,
-    CORRECT_NOTE_GIVEN,
-    CODE_FIXED,
-    LEVEL_HAS_CODE_FIX,
-} from "../objects/score";
+import { scoreState, resetScore } from "../objects/score";
 
 export class EndOfDay extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -67,14 +57,19 @@ export class EndOfDay extends Scene {
         }
 
         this.scoreText = this.add
-            .text(512, 400, `Today's Score: ${SCORE}/${MAX_SCORE}`, {
-                fontFamily: "Arial Black",
-                fontSize: 32,
-                color: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 4,
-                align: "center",
-            })
+            .text(
+                512,
+                400,
+                `Today's Score: ${scoreState.SCORE}/${scoreState.MAX_SCORE}`,
+                {
+                    fontFamily: "Arial Black",
+                    fontSize: 32,
+                    color: "#ffffff",
+                    stroke: "#000000",
+                    strokeThickness: 4,
+                    align: "center",
+                },
+            )
             .setOrigin(0.5)
             .setDepth(100);
 
@@ -122,22 +117,46 @@ export class EndOfDay extends Scene {
 
     generateSummaryMessages(): string[] {
         const messages: string[] = [];
-        const employeesSent = EMPLOYEES_SENT_TO_WORK;
-        const incorrectlyKickedOut = INCORRECTLY_KICKED_OUT;
-        const correctNoteGiven = CORRECT_NOTE_GIVEN;
-        const codeFixed = CODE_FIXED;
+        const employeesSent = scoreState.EMPLOYEES_SENT_TO_WORK;
+        const incorrectlyKickedOut = scoreState.INCORRECTLY_KICKED_OUT;
+        const correctNoteGiven = scoreState.CORRECT_NOTE_GIVEN;
+        const codeFixed = scoreState.CODE_FIXED;
 
-        // Employee summary message
+        console.log("End of Day Summary Debug:");
+        console.log("Employees Sent:", employeesSent);
+        console.log("Incorrectly Kicked Out:", incorrectlyKickedOut);
+        console.log("Correct Note Given:", correctNoteGiven);
+        console.log("Code Fixed:", codeFixed);
+        console.log("Level Has Code Fix:", scoreState.LEVEL_HAS_CODE_FIX);
+
+        // Force some test messages to see if the display works
+        console.log("Adding test messages for debugging...");
+        messages.push("DEBUG: This is a test message");
+        if (employeesSent > 0) {
+            messages.push("DEBUG: Employees sent condition met");
+        }
+        if (incorrectlyKickedOut > 0) {
+            messages.push("DEBUG: Incorrectly kicked out condition met");
+        }
+        if (correctNoteGiven) {
+            messages.push("DEBUG: Correct note given condition met");
+        }
+        if (codeFixed) {
+            messages.push("DEBUG: Code fixed condition met");
+        }
+
+        // Employee summary messages
+        if (employeesSent > 0) {
+            const employeeWord = employeesSent === 1 ? "employee" : "employees";
+            messages.push(
+                `${employeesSent} ${employeeWord} successfully went to work and completed their assignments.`,
+            );
+        }
         if (incorrectlyKickedOut > 0) {
             const employeeWord =
                 incorrectlyKickedOut === 1 ? "employee" : "employees";
             messages.push(
                 `${incorrectlyKickedOut} ${employeeWord} didn't show up to work today.`,
-            );
-        } else if (employeesSent > 0) {
-            const employeeWord = employeesSent === 1 ? "employee" : "employees";
-            messages.push(
-                `${employeesSent} ${employeeWord} successfully went to work and completed their assignments.`,
             );
         }
 
@@ -151,22 +170,22 @@ export class EndOfDay extends Scene {
         // Server status message
         if (codeFixed) {
             messages.push("The servers are running smoothly.");
-        } else if (LEVEL_HAS_CODE_FIX) {
+        } else if (scoreState.LEVEL_HAS_CODE_FIX) {
             messages.push("The company's servers had an outage.");
         }
-
+        console.log("Generated Messages:", messages);
         return messages.length > 0 ? messages : ["Great job out there!"];
     }
 
     changeScene() {
         resetScore();
-        if (TOTAL_MAX_SCORE === 5) {
+        if (scoreState.TOTAL_MAX_SCORE === 5) {
             this.scene.start("Level2");
-        } else if (TOTAL_MAX_SCORE === 12) {
+        } else if (scoreState.TOTAL_MAX_SCORE === 12) {
             this.scene.start("Level3");
-        } else if (TOTAL_MAX_SCORE === 21) {
+        } else if (scoreState.TOTAL_MAX_SCORE === 21) {
             this.scene.start("Level4");
-        } else if (TOTAL_MAX_SCORE === 33) {
+        } else if (scoreState.TOTAL_MAX_SCORE === 33) {
             this.scene.start("Level5");
         } else {
             this.scene.start("GameOver");

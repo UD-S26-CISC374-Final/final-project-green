@@ -114,6 +114,7 @@ export default class bugFix extends Phaser.GameObjects.Container {
 
                 if (correct) {
                     setCodeFixed(true);
+                    console.log("bugFixTask: setCodeFixed(true)");
                 }
 
                 this.onComplete?.(correct);
