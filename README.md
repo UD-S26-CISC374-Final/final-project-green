@@ -34,8 +34,8 @@ Link to our [egdd](./docs/egdd.md)
 
 # Credits
 
-Pixel People Icons: Svetlana Kushnariova, lana-chan@yandex.ru
-City Background on Main Menu: Ansimuz, ansimuzpixel@gmail.com
+Pixel People Icons: Svetlana Kushnariova, lana-chan@yandex.ru  
+City Background on Main Menu: Ansimuz, ansimuzpixel@gmail.com  
 Boss Steve: Chugong, Author
 
 
