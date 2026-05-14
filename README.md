@@ -21,8 +21,9 @@ Each day you will be given a program. At the top of this program you will have e
 
 # Screenshot
 
-<img width="2824" height="1502" alt="main_menu" src="https://github.com/user-attachments/assets/85877927-edaf-45a1-a667-3d5c2afdc46c" />
-<img width="2828" height="1506" alt="main_game" src="https://github.com/user-attachments/assets/28412461-b10b-47cb-93b8-cb7ee0e42794" />
+<img width="2824" height="1502" alt="main_menu_large" src="https://github.com/user-attachments/assets/af1aaceb-d83f-41b1-b2a3-1a142387b60a" />
+<img width="2828" height="1506" alt="main_game_large" src="https://github.com/user-attachments/assets/7d56a876-8b55-4675-850d-326145e1d681" />
+
 
 # Gameplay Video
 
@@ -34,9 +35,9 @@ Link to our [egdd](./docs/egdd.md)
 
 # Credits
 
-Pixel People Icons: Svetlana Kushnariova, lana-chan@yandex.ru  
-City Background on Main Menu: Ansimuz, ansimuzpixel@gmail.com  
-Boss Steve: Chugong, Author
+- Pixel People Icons: Svetlana Kushnariova, lana-chan@yandex.ru  
+- City Background on Main Menu: Ansimuz, ansimuzpixel@gmail.com  
+- Boss Steve: Chugong, Author
 
 
 
