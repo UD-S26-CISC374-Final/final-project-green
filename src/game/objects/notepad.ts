@@ -2,7 +2,7 @@ export default class notepad extends Phaser.GameObjects.Container {
     public icon: Phaser.GameObjects.Image;
     private static LOCAL_STORAGE_KEY = "player_notepad_notes";
     private emitted: boolean;
-    private overlay: Phaser.GameObjects.Rectangle;
+    private overlay?: Phaser.GameObjects.Rectangle;
     private textarea: HTMLTextAreaElement;
     private closeBtn?: HTMLButtonElement;
     constructor(
@@ -105,7 +105,9 @@ export default class notepad extends Phaser.GameObjects.Container {
     }
     }
     closeNotes() {
-        this.overlay.destroy();
+        if (this.overlay){
+            this.overlay.destroy();
+        }
         if (document.body.contains(this.textarea)) {
             this.textarea.remove();
         }
