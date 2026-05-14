@@ -11,10 +11,13 @@ export class Credits extends Scene implements ChangeableScene {
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
 
-        this.add.image(centerX, centerY, "background").setOrigin(0.5);
+        this.add
+            .image(centerX, centerY, "credits_lvlselect_bg")
+            .setOrigin(0.5)
+            .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
         this.add
-            .text(centerX, centerY - 120, "Credits", {
+            .text(centerX - 25, centerY - 280, "Credits", {
                 fontFamily: "Arial Black",
                 fontSize: "42px",
                 color: "#ffffff",
@@ -25,18 +28,43 @@ export class Credits extends Scene implements ChangeableScene {
             .setOrigin(0.5);
 
         this.add
-            .text(centerX, centerY - 40, "Created by your project team", {
+            .text(centerX - 5, centerY - 80, "Created by Team          ", {
                 fontFamily: "Arial",
-                fontSize: "26px",
+                fontSize: "30px",
                 color: "#ffffff",
                 stroke: "#000000",
                 strokeThickness: 6,
                 align: "center",
             })
             .setOrigin(0.5);
+        this.add
+            .text(centerX + 70, centerY - 80, "Green", {
+                fontFamily: "Arial",
+                fontSize: "30px",
+                color: "#0bac0b",
+                stroke: "#1df41d",
+                strokeThickness: 6,
+                align: "center",
+            })
+            .setOrigin(0, 0.5);
+        this.add
+            .text(
+                centerX - 5,
+                centerY - 30,
+                "Andrew Shaffer and Joanna Amoah",
+                {
+                    fontFamily: "Arial",
+                    fontSize: "26px",
+                    color: "#ffffff",
+                    stroke: "#000000",
+                    strokeThickness: 6,
+                    align: "center",
+                },
+            )
+            .setOrigin(0.5);
 
         this.add
-            .text(centerX, centerY + 20, "Thanks for playing!", {
+            .text(centerX - 5, centerY + 20, "Thanks for playing!", {
                 fontFamily: "Arial",
                 fontSize: "24px",
                 color: "#ffffff",
@@ -47,7 +75,7 @@ export class Credits extends Scene implements ChangeableScene {
             .setOrigin(0.5);
 
         const backText = this.add
-            .text(centerX, centerY + 140, "Back to Menu", {
+            .text(centerX - 5, centerY + 140, "Back to Menu", {
                 fontFamily: "Arial Black",
                 fontSize: "32px",
                 color: "#ffffff",
@@ -60,7 +88,7 @@ export class Credits extends Scene implements ChangeableScene {
 
         const backButton = this.add
             .rectangle(
-                centerX,
+                centerX - 5,
                 centerY + 140,
                 backText.width + 60,
                 backText.height + 30,
