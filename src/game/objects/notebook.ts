@@ -1,7 +1,10 @@
+import type notepad from "./notepad";
+
 export default class notebook extends Phaser.GameObjects.Container {
     public icon: Phaser.GameObjects.Image;
     private codes: string;
     private emitted: boolean;
+    public notesOpen: boolean = false;
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -179,6 +182,15 @@ export default class notebook extends Phaser.GameObjects.Container {
         closeBtn.style.background = "#eee";
         closeBtn.style.cursor = "pointer";
 
+        const openNotesButton = document.createElement("button");
+        openNotesButton.textContent = "Toggle Notepad";
+        openNotesButton.style.fontSize = "14px";
+        openNotesButton.style.padding = "6px 16px";
+        openNotesButton.style.border = "2px solid #333";
+        openNotesButton.style.borderRadius = "4px";
+        openNotesButton.style.background = "#eee";
+        openNotesButton.style.cursor = "pointer";
+
         prevBtn.onclick = () => {
             if (currentPage > 0) {
                 currentPage--;
@@ -216,8 +228,40 @@ export default class notebook extends Phaser.GameObjects.Container {
             this.scene.children.remove(codesText);
             document.body.removeChild(pageIndicator);
             document.body.removeChild(buttonContainer);
+            const sceneWithPerson = this.scene as Phaser.Scene & {
+                    notepad?: notepad;
+            };
+            console.log("goodbye notebook")
+            if (this.notesOpen) {
+                this.notesOpen = false;
+                console.log("attempting to close notes");
+                sceneWithPerson.notepad?.closeNotes();
+            }
         };
 
+        openNotesButton.onclick = () => {
+            const sceneWithPerson = this.scene as Phaser.Scene & {
+                    notepad?: notepad;
+                };
+            if (!this.notesOpen) {
+                console.log("opening notes")
+                if (sceneWithPerson.notepad) {
+                    sceneWithPerson.notepad.openNotepad(this.scene.cameras.main.width / 2 + contentWidth / 2 + 250,
+                        this.scene.cameras.main.height / 2,
+                        false
+                    );
+                }
+            } else {
+                console.log("closing notes")
+                if (sceneWithPerson.notepad) {
+                    sceneWithPerson.notepad.closeNotes();
+                }
+                
+            }
+            this.notesOpen = !this.notesOpen;
+        };
+
+        buttonContainer.appendChild(openNotesButton);
         buttonContainer.appendChild(prevBtn);
         buttonContainer.appendChild(nextBtn);
         buttonContainer.appendChild(closeBtn);

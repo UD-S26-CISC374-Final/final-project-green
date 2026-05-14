@@ -2,6 +2,9 @@ export default class notepad extends Phaser.GameObjects.Container {
     public icon: Phaser.GameObjects.Image;
     private static LOCAL_STORAGE_KEY = "player_notepad_notes";
     private emitted: boolean;
+    private overlay: Phaser.GameObjects.Rectangle;
+    private textarea: HTMLTextAreaElement;
+    private closeBtn?: HTMLButtonElement;
     constructor(
         scene: Phaser.Scene,
         x: number,
@@ -23,9 +26,13 @@ export default class notepad extends Phaser.GameObjects.Container {
         this.wipeNotes(); // Clear notes at the start of each game
     }
 
-    openNotepad() {
+    openNotepad(x?: number, y?: number, makeOverlay: boolean = true) {
+        const posX = x ?? this.scene.cameras.main.width / 2;
+        const posY = y ?? this.scene.cameras.main.height / 2;
+
         // Create overlay
-        const overlay = this.scene.add
+        if (makeOverlay) {
+        this.overlay = this.scene.add
             .rectangle(
                 this.scene.cameras.main.width / 2,
                 this.scene.cameras.main.height / 2,
@@ -39,61 +46,74 @@ export default class notepad extends Phaser.GameObjects.Container {
             .on("pointerdown", () => {
                 // Swallow clicks while the popup is open
             });
+        }
 
         // Create HTML textarea overlay
-        const textarea = document.createElement("textarea");
-        textarea.id = "phaser-notepad-textarea";
-        textarea.style.position = "fixed";
-        textarea.style.left = "50%";
-        textarea.style.top = "50%";
-        textarea.style.transform = "translate(-50%, -50%)";
-        textarea.style.width = "500px";
-        textarea.style.height = "350px";
-        textarea.style.zIndex = "2000";
-        textarea.style.fontSize = "18px";
-        textarea.style.padding = "16px";
-        textarea.style.border = "2px solid #333";
-        textarea.style.borderRadius = "8px";
-        textarea.style.background = "#fff";
-        textarea.style.color = "#222";
-        textarea.style.resize = "vertical";
-        textarea.style.boxShadow = "0 4px 32px rgba(0,0,0,0.25)";
-        textarea.placeholder = "Type your notes here...";
-        textarea.value = localStorage.getItem(notepad.LOCAL_STORAGE_KEY) || "";
+        this.textarea = document.createElement("textarea");
+        this.textarea.id = "phaser-notepad-textarea";
+        this.textarea.style.position = "fixed";
+        this.textarea.style.left = `${posX}px`;
+        this.textarea.style.top = `${posY}px`;
+        this.textarea.style.transform = "translate(-50%, -50%)";
+        this.textarea.style.width = "500px";
+        this.textarea.style.height = "350px";
+        this.textarea.style.zIndex = "2000";
+        this.textarea.style.fontSize = "18px";
+        this.textarea.style.padding = "16px";
+        this.textarea.style.border = "2px solid #333";
+        this.textarea.style.borderRadius = "8px";
+        this.textarea.style.background = "#fff";
+        this.textarea.style.color = "#222";
+        this.textarea.style.resize = "vertical";
+        this.textarea.style.boxShadow = "0 4px 32px rgba(0,0,0,0.25)";
+        this.textarea.placeholder = "Type your notes here...";
+        this.textarea.value = localStorage.getItem(notepad.LOCAL_STORAGE_KEY) || "";
 
         // Save on input
-        textarea.addEventListener("input", () => {
-            localStorage.setItem(notepad.LOCAL_STORAGE_KEY, textarea.value);
+        this.textarea.addEventListener("input", () => {
+            localStorage.setItem(notepad.LOCAL_STORAGE_KEY, this.textarea.value);
         });
 
-        document.body.appendChild(textarea);
+        document.body.appendChild(this.textarea);
 
         // Close button (HTML)
-        const closeBtn = document.createElement("button");
-        closeBtn.textContent = "Close";
-        closeBtn.style.position = "fixed";
-        closeBtn.style.left = "50%";
-        closeBtn.style.top = "calc(50% + 200px)";
-        closeBtn.style.transform = "translate(-50%, 0)";
-        closeBtn.style.zIndex = "2001";
-        closeBtn.style.fontSize = "18px";
-        closeBtn.style.padding = "8px 32px";
-        closeBtn.style.border = "2px solid #333";
-        closeBtn.style.borderRadius = "8px";
-        closeBtn.style.background = "#eee";
-        closeBtn.style.cursor = "pointer";
+        if (makeOverlay) {
+        this.closeBtn = document.createElement("button");
+        this.closeBtn.textContent = "Close";
+        this.closeBtn.style.position = "fixed";
+        this.closeBtn.style.left = `${posX}px`;
+        this.closeBtn.style.top = `${posY + 200}px`;
+        this.closeBtn.style.transform = "translate(-50%, 0)";
+        this.closeBtn.style.zIndex = "2001";
+        this.closeBtn.style.fontSize = "18px";
+        this.closeBtn.style.padding = "8px 32px";
+        this.closeBtn.style.border = "2px solid #333";
+        this.closeBtn.style.borderRadius = "8px";
+        this.closeBtn.style.background = "#eee";
+        this.closeBtn.style.cursor = "pointer";
 
-        closeBtn.onclick = () => {
+        this.closeBtn.onclick = () => {
             if (!this.emitted) {
                 console.log("Emitting closeNotepad event");
                 this.scene.events.emit("closeNotepad");
                 this.emitted = true;
             }
-            this.scene.children.remove(overlay);
-            document.body.removeChild(textarea);
-            document.body.removeChild(closeBtn);
+            this.closeNotes();
+            console.log("from notepad")
         };
-        document.body.appendChild(closeBtn);
+        document.body.appendChild(this.closeBtn);
+    }
+    }
+    closeNotes() {
+        this.overlay.destroy();
+        if (document.body.contains(this.textarea)) {
+            this.textarea.remove();
+        }
+
+        if (this.closeBtn && document.body.contains(this.closeBtn)) {
+            this.closeBtn.remove();
+        }
+        console.log("notes closed")
     }
 
     wipeNotes() {
