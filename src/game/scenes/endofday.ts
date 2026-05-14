@@ -36,23 +36,26 @@ export class EndOfDay extends Scene {
         //     .setOrigin(0.5)
         //     .setDepth(100);
 
+        this.add.image(618, 225, "login-icon").setOrigin(0.5).setScale(0.45);
+
         const messages = this.generateSummaryMessages();
 
-        for (const message of messages) {
+        messages.forEach((message, index) => {
             const messageText = this.add
-                .text(450, 360, message, {
+                .text(450, 380 + index * 40, message, {
                     fontFamily: "Courier New",
-                    fontSize: 18,
-                    color: "#261913",
+                    fontSize: 16,
+                    color: "#ffe0d2",
                     stroke: "#000000",
                     strokeThickness: 3,
                     align: "center",
-                    wordWrap: { width: 430 },
+                    wordWrap: { width: 380 },
                 })
                 .setOrigin(0.5)
                 .setDepth(100);
+
             this.summaryMessage.push(messageText);
-        }
+        });
 
         this.scoreText = this.add
             .text(
@@ -62,7 +65,7 @@ export class EndOfDay extends Scene {
                 {
                     fontFamily: "Courier New",
                     fontSize: 30,
-                    color: "#261913",
+                    color: "#ffe0d2",
                     stroke: "#000000",
                     strokeThickness: 4,
                     align: "center",
@@ -75,7 +78,7 @@ export class EndOfDay extends Scene {
             .text(1000, 380, "Next Day", {
                 fontFamily: "Courier New",
                 fontSize: 45,
-                color: "#261913",
+                color: "#ffe0d2",
                 stroke: "#000000",
                 strokeThickness: 4,
                 align: "center",
@@ -90,14 +93,14 @@ export class EndOfDay extends Scene {
                 this.nextDayButton.setStyle({ color: "#c47f00" });
             })
             .on("pointerout", () => {
-                this.nextDayButton.setStyle({ color: "#ffffff" });
+                this.nextDayButton.setStyle({ color: "#ffe0d2" });
             });
 
         this.levelSelectButton = this.add
             .text(1000, 480, "Level Select", {
                 fontFamily: "Courier New",
                 fontSize: 45,
-                color: "#261913",
+                color: "#ffe0d2",
                 stroke: "#000000",
                 strokeThickness: 4,
                 align: "center",
@@ -113,7 +116,7 @@ export class EndOfDay extends Scene {
                 this.levelSelectButton.setStyle({ color: "#c47f00" });
             })
             .on("pointerout", () => {
-                this.levelSelectButton.setStyle({ color: "#ffffff" });
+                this.levelSelectButton.setStyle({ color: "#ffe0d2" });
             });
 
         EventBus.emit("current-scene-ready", this);
