@@ -235,16 +235,16 @@ export class Level1 extends Scene {
             .setDepth(1)
             .setVisible(false);
 
-        this.skipButton = this.add
-            .text(screenWidth - 100, 20, "Skip", {
-                fontSize: "24px",
-                color: "#000000",
-            })
-            .setInteractive({ useHandCursor: true })
-            .on("pointerdown", () => {
-                console.log("Skip button clicked");
-                this.changeScene();
-            });
+        // this.skipButton = this.add
+        //     .text(screenWidth - 100, 20, "Skip", {
+        //         fontSize: "24px",
+        //         color: "#000000",
+        //     })
+        //     .setInteractive({ useHandCursor: true })
+        //     .on("pointerdown", () => {
+        //         console.log("Skip button clicked");
+        //         this.changeScene();
+        //     });
 
         // Desk rectangle
         const deskY = screenHeight * 0.75;

@@ -7,7 +7,7 @@ import {
     incrementIncorrectlyKickedOut,
 } from "../objects/score";
 import PhaserLogo from "../objects/phaser-logo";
-import FpsText from "../objects/fps-text";
+// import FpsText from "../objects/fps-text";
 import person from "../objects/person";
 import notebook from "../objects/notebook";
 import giveNote from "../objects/giveNote";
@@ -28,7 +28,7 @@ export class baseLevel extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     phaserLogo: PhaserLogo;
-    fpsText: FpsText;
+    // fpsText: FpsText;
     numberOfTasks: number;
     numberOfPeople: number;
     numberOfImpostors: number;
@@ -108,7 +108,7 @@ export class baseLevel extends Scene {
             .setScale(0.75)
             .setDepth(0.99);
 
-        this.fpsText = new FpsText(this);
+        // this.fpsText = new FpsText(this);
 
         this.boss = new person(
             this,
@@ -188,17 +188,17 @@ export class baseLevel extends Scene {
             }
         }
 
-        this.skipButton = this.add
-            .text(screenWidth - 100, 20, "Skip", {
-                fontSize: "24px",
-                color: "#000000",
-            })
-            .setInteractive({ useHandCursor: true })
-            .setDepth(10000000000000000000)
-            .on("pointerdown", () => {
-                console.log("Skip button clicked");
-                this.changeScene();
-            });
+        // this.skipButton = this.add
+        //     .text(screenWidth - 100, 20, "Skip", {
+        //         fontSize: "24px",
+        //         color: "#000000",
+        //     })
+        //     .setInteractive({ useHandCursor: true })
+        //     .setDepth(10000000000000000000)
+        //     .on("pointerdown", () => {
+        //         console.log("Skip button clicked");
+        //         this.changeScene();
+        //     });
 
         this.guards = this.add.group();
         const guardPositions = [
@@ -307,9 +307,9 @@ export class baseLevel extends Scene {
         this.bossTime();
     }
 
-    update() {
-        this.fpsText.update();
-    }
+    // update() {
+    //     this.fpsText.update();
+    // }
 
     changeScene() {
         setScore(this.score);
