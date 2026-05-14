@@ -30,8 +30,8 @@ export class Level1 extends Scene {
     desk: Phaser.GameObjects.Image;
     fpsText: FpsText;
     guards: Phaser.GameObjects.Group;
-    redButton: Phaser.GameObjects.Arc;
-    greenButton: Phaser.GameObjects.Arc;
+    redButton: Phaser.GameObjects.Image;
+    greenButton: Phaser.GameObjects.Image;
     person1: person;
     person2: person;
     person3: person;
@@ -250,18 +250,13 @@ export class Level1 extends Scene {
         const deskY = screenHeight * 0.75;
 
         // Add two buttons on the desk at the very end, with highest depth
-        const buttonRadius = 40;
         const buttonY = deskY;
         const buttonSpacing = 120;
         // Red button (left)
         this.redButton = this.add
-            .circle(
-                screenWidth / 2 - buttonSpacing,
-                buttonY,
-                buttonRadius,
-                0xff0000,
-            )
-            .setStrokeStyle(4, 0x880000)
+            .image(screenWidth / 2 - buttonSpacing, buttonY, "red-button")
+            .setOrigin(0.5)
+            .setScale(0.45)
             .setDepth(1)
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
@@ -273,13 +268,9 @@ export class Level1 extends Scene {
             });
         // Green button (right)
         this.greenButton = this.add
-            .circle(
-                screenWidth / 2 + buttonSpacing,
-                buttonY,
-                buttonRadius,
-                0x00ff00,
-            )
-            .setStrokeStyle(4, 0x006600)
+            .image(screenWidth / 2 + buttonSpacing, buttonY, "green-button")
+            .setOrigin(0.5)
+            .setScale(0.45)
             .setDepth(1)
             .setVisible(false)
             .setInteractive({ useHandCursor: true })
