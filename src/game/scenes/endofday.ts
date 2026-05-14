@@ -24,46 +24,44 @@ export class EndOfDay extends Scene {
             .setOrigin(0.5)
             .setDisplaySize(this.camera.width, this.camera.height);
 
-        this.endOfDayText = this.add
-            .text(512, 100, "Today's Summary", {
-                fontFamily: "Arial Black",
-                fontSize: 48,
-                color: "#ffffff",
-                stroke: "#000000",
-                strokeThickness: 8,
-                align: "center",
-            })
-            .setOrigin(0.5)
-            .setDepth(100);
+        // this.endOfDayText = this.add
+        //     .text(512, 100, "Today's Summary", {
+        //         fontFamily: "Arial Black",
+        //         fontSize: 48,
+        //         color: "#ffffff",
+        //         stroke: "#000000",
+        //         strokeThickness: 8,
+        //         align: "center",
+        //     })
+        //     .setOrigin(0.5)
+        //     .setDepth(100);
 
-        let yOffset = 170;
         const messages = this.generateSummaryMessages();
 
         for (const message of messages) {
             const messageText = this.add
-                .text(512, yOffset, message, {
+                .text(450, 360, message, {
                     fontFamily: "Arial Black",
                     fontSize: 18,
                     color: "#ffffff",
                     stroke: "#000000",
                     strokeThickness: 3,
                     align: "center",
-                    wordWrap: { width: 800 },
+                    wordWrap: { width: 450 },
                 })
                 .setOrigin(0.5)
                 .setDepth(100);
             this.summaryMessage.push(messageText);
-            yOffset += 50;
         }
 
         this.scoreText = this.add
             .text(
-                512,
-                400,
+                450,
+                600,
                 `Today's Score: ${scoreState.SCORE}/${scoreState.MAX_SCORE}`,
                 {
                     fontFamily: "Arial Black",
-                    fontSize: 32,
+                    fontSize: 30,
                     color: "#ffffff",
                     stroke: "#000000",
                     strokeThickness: 4,
@@ -74,9 +72,9 @@ export class EndOfDay extends Scene {
             .setDepth(100);
 
         this.nextDayButton = this.add
-            .text(512, 480, "Next Day", {
+            .text(1000, 380, "Next Day", {
                 fontFamily: "Arial Black",
-                fontSize: 24,
+                fontSize: 45,
                 color: "#ffffff",
                 stroke: "#000000",
                 strokeThickness: 4,
@@ -87,12 +85,18 @@ export class EndOfDay extends Scene {
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => {
                 this.changeScene();
+            })
+            .on("pointerover", () => {
+                this.nextDayButton.setStyle({ color: "#ffff00" });
+            })
+            .on("pointerout", () => {
+                this.nextDayButton.setStyle({ color: "#ffffff" });
             });
 
         this.levelSelectButton = this.add
-            .text(512, 550, "Level Select", {
+            .text(1000, 480, "Level Select", {
                 fontFamily: "Arial Black",
-                fontSize: 24,
+                fontSize: 45,
                 color: "#ffffff",
                 stroke: "#000000",
                 strokeThickness: 4,
@@ -128,22 +132,6 @@ export class EndOfDay extends Scene {
         console.log("Correct Note Given:", correctNoteGiven);
         console.log("Code Fixed:", codeFixed);
         console.log("Level Has Code Fix:", scoreState.LEVEL_HAS_CODE_FIX);
-
-        // Force some test messages to see if the display works
-        console.log("Adding test messages for debugging...");
-        messages.push("DEBUG: This is a test message");
-        if (employeesSent > 0) {
-            messages.push("DEBUG: Employees sent condition met");
-        }
-        if (incorrectlyKickedOut > 0) {
-            messages.push("DEBUG: Incorrectly kicked out condition met");
-        }
-        if (correctNoteGiven) {
-            messages.push("DEBUG: Correct note given condition met");
-        }
-        if (codeFixed) {
-            messages.push("DEBUG: Code fixed condition met");
-        }
 
         // Employee summary messages
         if (employeesSent > 0) {
