@@ -41,7 +41,7 @@ export class EndOfDay extends Scene {
         for (const message of messages) {
             const messageText = this.add
                 .text(450, 360, message, {
-                    fontFamily: "Arial Black",
+                    fontFamily: "Courier New",
                     fontSize: 18,
                     color: "#ffffff",
                     stroke: "#000000",
@@ -60,7 +60,7 @@ export class EndOfDay extends Scene {
                 600,
                 `Today's Score: ${scoreState.SCORE}/${scoreState.MAX_SCORE}`,
                 {
-                    fontFamily: "Arial Black",
+                    fontFamily: "Courier New",
                     fontSize: 30,
                     color: "#ffffff",
                     stroke: "#000000",
@@ -73,7 +73,7 @@ export class EndOfDay extends Scene {
 
         this.nextDayButton = this.add
             .text(1000, 380, "Next Day", {
-                fontFamily: "Arial Black",
+                fontFamily: "Courier New",
                 fontSize: 45,
                 color: "#ffffff",
                 stroke: "#000000",
@@ -95,7 +95,7 @@ export class EndOfDay extends Scene {
 
         this.levelSelectButton = this.add
             .text(1000, 480, "Level Select", {
-                fontFamily: "Arial Black",
+                fontFamily: "Courier New",
                 fontSize: 45,
                 color: "#ffffff",
                 stroke: "#000000",
