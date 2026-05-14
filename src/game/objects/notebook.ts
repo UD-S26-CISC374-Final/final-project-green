@@ -1,26 +1,24 @@
 export default class notebook extends Phaser.GameObjects.Container {
-    public rect: Phaser.GameObjects.Rectangle;
-    private text: Phaser.GameObjects.Text;
+    public icon: Phaser.GameObjects.Image;
     private codes: string;
     private emitted: boolean;
-    constructor(scene: Phaser.Scene, x: number, y: number, codes: string = "", emitted: boolean = true) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        codes: string = "",
+        emitted: boolean = true,
+    ) {
         super(scene, x, y);
         this.codes = codes;
         this.emitted = emitted;
-        this.rect = this.scene.add
-            .rectangle(0, 0, 75, 100, 0xffffff)
-            .setStrokeStyle(2, 0x000000)
+        this.icon = this.scene.add
+            .image(0, 0, "notepad-button")
+            .setOrigin(0.5)
+            .setScale(0.45)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => this.openNotebook());
-        this.text = this.scene.add
-            .text(0, 0, "Today's\nCodes", {
-                fontSize: "14px",
-                color: "#000000",
-            })
-            .setOrigin(0.5, 0.5);
-
-        this.add(this.rect);
-        this.add(this.text);
+        this.add(this.icon);
 
         this.scene.add.existing(this);
     }
@@ -30,7 +28,9 @@ export default class notebook extends Phaser.GameObjects.Container {
     }
 
     openNotebook() {
-        const maxContentHeight = Math.floor(this.scene.cameras.main.height * 0.75);
+        const maxContentHeight = Math.floor(
+            this.scene.cameras.main.height * 0.75,
+        );
         const maxContentWidth = 550;
         const padding = 40;
         const padding_x = 20;
@@ -38,38 +38,49 @@ export default class notebook extends Phaser.GameObjects.Container {
         const pages: string[] = [];
 
         // Split codes into lines
-        const codeLines = this.codes.split('\n');
-        
+        const codeLines = this.codes.split("\n");
+
         // Create a temporary text to measure line height and width
-        const tempText = this.scene.add
-            .text(0, 0, "Test", {
-                fontSize: "15px",
-                color: "#000000",
-                wordWrap: { width: maxContentWidth - padding_x * 2 }
-            });
+        const tempText = this.scene.add.text(0, 0, "Test", {
+            fontSize: "15px",
+            color: "#000000",
+            wordWrap: { width: maxContentWidth - padding_x * 2 },
+        });
         const lineHeight = tempText.height;
         this.scene.children.remove(tempText);
 
         // Calculate lines per page
-        const linesPerPage = Math.floor((maxContentHeight - padding) / lineHeight);
-        
+        const linesPerPage = Math.floor(
+            (maxContentHeight - padding) / lineHeight,
+        );
+
         // Split code into pages
         for (let i = 0; i < codeLines.length; i += linesPerPage) {
-            pages.push(codeLines.slice(i, i + linesPerPage).join('\n'));
+            pages.push(codeLines.slice(i, i + linesPerPage).join("\n"));
         }
 
         // Measure first page to determine appropriate width
-        const measureText = this.scene.add
-            .text(0, 0, "Today's Codes:\n" + pages[0], {
+        const measureText = this.scene.add.text(
+            0,
+            0,
+            "Today's Codes:\n" + pages[0],
+            {
                 fontSize: "15px",
                 color: "#000000",
-                wordWrap: { width: maxContentWidth - padding_x * 2 }
-            });
+                wordWrap: { width: maxContentWidth - padding_x * 2 },
+            },
+        );
         const textBounds = measureText.getBounds();
         this.scene.children.remove(measureText);
 
-        const contentWidth = Math.min(Math.max(textBounds.width + padding_x * 2, 200), maxContentWidth);
-        const contentHeight = pages.length > 1 ? maxContentHeight : Math.min(textBounds.height + padding, maxContentHeight);
+        const contentWidth = Math.min(
+            Math.max(textBounds.width + padding_x * 2, 200),
+            maxContentWidth,
+        );
+        const contentHeight =
+            pages.length > 1 ?
+                maxContentHeight
+            :   Math.min(textBounds.height + padding, maxContentHeight);
 
         const overlay = this.scene.add
             .rectangle(
@@ -97,12 +108,14 @@ export default class notebook extends Phaser.GameObjects.Container {
         const codesText = this.scene.add
             .text(
                 this.scene.cameras.main.width / 2,
-                this.scene.cameras.main.height / 2 - contentHeight / 2 + padding / 2,
+                this.scene.cameras.main.height / 2 -
+                    contentHeight / 2 +
+                    padding / 2,
                 "Today's Codes:\n" + pages[0],
                 {
                     fontSize: "15px",
                     color: "#000000",
-                    wordWrap: { width: contentWidth - padding_x * 2 }
+                    wordWrap: { width: contentWidth - padding_x * 2 },
                 },
             )
             .setOrigin(0.5, 0)
@@ -111,17 +124,22 @@ export default class notebook extends Phaser.GameObjects.Container {
         const pageIndicator = document.createElement("div");
         pageIndicator.style.position = "fixed";
         pageIndicator.style.left = "50%";
-        pageIndicator.style.top = (this.scene.cameras.main.height / 2 + contentHeight / 2 - 20) + "px";
+        pageIndicator.style.top =
+            this.scene.cameras.main.height / 2 + contentHeight / 2 - 20 + "px";
         pageIndicator.style.transform = "translate(-50%, 0)";
         pageIndicator.style.zIndex = "2001";
         pageIndicator.style.fontSize = "14px";
         pageIndicator.style.color = "#333";
-        pageIndicator.textContent = pages.length > 1 ? `Page ${currentPage + 1} of ${pages.length}` : "";
+        pageIndicator.textContent =
+            pages.length > 1 ?
+                `Page ${currentPage + 1} of ${pages.length}`
+            :   "";
 
         const buttonContainer = document.createElement("div");
         buttonContainer.style.position = "fixed";
         buttonContainer.style.left = "50%";
-        buttonContainer.style.top = (this.scene.cameras.main.height / 2 + contentHeight / 2 + 20) + "px";
+        buttonContainer.style.top =
+            this.scene.cameras.main.height / 2 + contentHeight / 2 + 20 + "px";
         buttonContainer.style.transform = "translate(-50%, 0)";
         buttonContainer.style.zIndex = "2001";
         buttonContainer.style.display = "flex";
@@ -169,7 +187,8 @@ export default class notebook extends Phaser.GameObjects.Container {
                 prevBtn.disabled = currentPage === 0;
                 prevBtn.style.opacity = currentPage === 0 ? "0.5" : "1";
                 nextBtn.disabled = currentPage === pages.length - 1;
-                nextBtn.style.opacity = currentPage === pages.length - 1 ? "0.5" : "1";
+                nextBtn.style.opacity =
+                    currentPage === pages.length - 1 ? "0.5" : "1";
             }
         };
 
@@ -181,14 +200,15 @@ export default class notebook extends Phaser.GameObjects.Container {
                 prevBtn.disabled = currentPage === 0;
                 prevBtn.style.opacity = currentPage === 0 ? "0.5" : "1";
                 nextBtn.disabled = currentPage === pages.length - 1;
-                nextBtn.style.opacity = currentPage === pages.length - 1 ? "0.5" : "1";
+                nextBtn.style.opacity =
+                    currentPage === pages.length - 1 ? "0.5" : "1";
             }
         };
 
         closeBtn.onclick = () => {
             if (!this.emitted) {
                 console.log("Emitting closeNotebook event");
-                this.scene.events.emit('closeNotebook');
+                this.scene.events.emit("closeNotebook");
                 this.emitted = true;
             }
             this.scene.children.remove(overlay);

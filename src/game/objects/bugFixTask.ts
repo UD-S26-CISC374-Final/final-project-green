@@ -1,5 +1,5 @@
+import { setCodeFixed } from "../objects/score";
 export default class bugFix extends Phaser.GameObjects.Container {
-
     public codes: string;
     public correctLine: number;
     public overlay: Phaser.GameObjects.Rectangle;
@@ -12,8 +12,7 @@ export default class bugFix extends Phaser.GameObjects.Container {
         y: number,
         codes: string = "",
         correctLine: number = 1,
-        onComplete?: (correct: boolean) => void
-
+        onComplete?: (correct: boolean) => void,
     ) {
         super(scene, x, y);
 
@@ -35,117 +34,97 @@ export default class bugFix extends Phaser.GameObjects.Container {
             .on("pointerdown", () => {
                 // Swallow clicks while the popup is open
             });
-        
+
         scene.add.existing(this);
-        this.setDepth(20)
-        
-        
+        this.setDepth(20);
+
         this.createCodePopup();
-            
     }
 
     createCodePopup() {
+        const codeLines = this.codes.split("\n");
 
-    const codeLines = this.codes.split("\n");
+        const paddingX = 10;
+        const paddingY = 10;
+        const lineSpacing = 15;
+        const maxWidth = 700;
 
-    const paddingX = 10;
-    const paddingY = 10;
-    const lineSpacing = 15;
-    const maxWidth = 700;
-
-    // TEMP text for measuring
-    const measureText = this.scene.add.text(
-        0,
-        0,
-        this.codes,
-        {
+        // TEMP text for measuring
+        const measureText = this.scene.add.text(0, 0, this.codes, {
             fontSize: "15px",
             fontFamily: "monospace",
-            wordWrap: { width: maxWidth - paddingX * 2 }
-        }
-    );
+            wordWrap: { width: maxWidth - paddingX * 2 },
+        });
 
-    const bounds = measureText.getBounds();
+        const bounds = measureText.getBounds();
 
-    measureText.destroy();
+        measureText.destroy();
 
-    // Dynamic sizing
-    const boxWidth = Math.min(
-        Math.max(bounds.width + paddingX * 2, 300),
-        maxWidth
-    );
+        // Dynamic sizing
+        const boxWidth = Math.min(
+            Math.max(bounds.width + paddingX * 2, 300),
+            maxWidth,
+        );
 
-    const boxHeight = Math.max(
-        bounds.height + paddingY * 2,
-        150
-    );
+        const boxHeight = Math.max(bounds.height + paddingY * 2, 150);
 
-    // Background
-    const bg = this.scene.add.rectangle(
-        0,
-        0,
-        boxWidth,
-        boxHeight,
-        0x1e1e1e
-    )
-    .setOrigin(0.5);
+        // Background
+        const bg = this.scene.add
+            .rectangle(0, 0, boxWidth, boxHeight, 0x1e1e1e)
+            .setOrigin(0.5);
 
-    this.add(bg);
+        this.add(bg);
 
-    // Starting positions
-    const startX = -boxWidth / 2 + paddingX;
-    const startY = -boxHeight / 2 + paddingY;
+        // Starting positions
+        const startX = -boxWidth / 2 + paddingX;
+        const startY = -boxHeight / 2 + paddingY;
 
-    codeLines.forEach((line, index) => {
+        codeLines.forEach((line, index) => {
+            const lineNumber = index + 1;
 
-        const lineNumber = index + 1;
+            const lineText = this.scene.add
+                .text(startX, startY + index * lineSpacing, `${line}`, {
+                    fontSize: "15px",
+                    color: "#ffffff",
+                    fontFamily: "monospace",
+                    wordWrap: {
+                        width: boxWidth - paddingX * 2,
+                    },
+                })
+                .setOrigin(0);
 
-        const lineText = this.scene.add.text(
-            startX,
-            startY + index * lineSpacing,
-            `${line}`,
-            {
-                fontSize: "15px",
-                color: "#ffffff",
-                fontFamily: "monospace",
-                wordWrap: {
-                    width: boxWidth - paddingX * 2
+            lineText.setInteractive({ useHandCursor: true });
+
+            lineText.on("pointerover", () => {
+                lineText.setStyle({
+                    backgroundColor: "#444444",
+                });
+            });
+
+            lineText.on("pointerout", () => {
+                lineText.setStyle({
+                    backgroundColor: "",
+                });
+            });
+
+            lineText.on("pointerdown", () => {
+                console.log("Clicked line:", lineNumber);
+
+                const correct = lineNumber === this.correctLine;
+
+                if (correct) {
+                    setCodeFixed(true);
+                    console.log("bugFixTask: setCodeFixed(true)");
                 }
-            }
-        )
-        .setOrigin(0);
 
-        lineText.setInteractive({ useHandCursor: true });
+                this.onComplete?.(correct);
 
-        lineText.on("pointerover", () => {
+                this.overlay.destroy();
 
-            lineText.setStyle({
-                backgroundColor: "#444444"
+                this.destroy();
             });
+
+            this.add(lineText);
         });
-
-        lineText.on("pointerout", () => {
-
-            lineText.setStyle({
-                backgroundColor: ""
-            });
-        });
-
-        lineText.on("pointerdown", () => {
-
-            console.log("Clicked line:", lineNumber);
-
-            const correct = lineNumber === this.correctLine;
-
-
-            this.onComplete?.(correct);
-
-            this.overlay.destroy();
-
-            this.destroy();
-        });
-
-        this.add(lineText);
-    });
-}
+    }
 }

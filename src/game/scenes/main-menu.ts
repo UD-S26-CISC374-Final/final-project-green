@@ -15,8 +15,27 @@ export class MainMenu extends Scene implements ChangeableScene {
         const centerY = this.cameras.main.centerY;
 
         this.background = this.add
-            .image(centerX, centerY, "background")
-            .setOrigin(0.5);
+            .image(centerX, centerY, "main-menu-bg")
+            .setOrigin(0.5)
+            .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+
+        this.add
+            .text(centerX - 25, centerY - 282, "That's Not My Programmer", {
+                fontFamily: "Arial Black",
+                fontSize: "40px",
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 8,
+                align: "center",
+                wordWrap: { width: 450 },
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+
+        this.add
+            .image(centerX, centerY - 120, "login-icon")
+            .setOrigin(0.5)
+            .setScale(0.5);
 
         const menuOptions = [
             { label: "Start Game", scene: "Level1" },
@@ -24,15 +43,15 @@ export class MainMenu extends Scene implements ChangeableScene {
             { label: "Credits", scene: "Credits" },
         ];
 
-        const startY = centerY - 80;
-        const spacing = 90;
+        const startY = centerY - 10;
+        const spacing = 70;
 
         menuOptions.forEach((option, index) => {
             const y = startY + index * spacing;
             const buttonText = this.add
                 .text(centerX, y, option.label, {
                     fontFamily: "Arial Black",
-                    fontSize: "34px",
+                    fontSize: "25px",
                     color: "#ffffff",
                     stroke: "#000000",
                     strokeThickness: 8,
