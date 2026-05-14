@@ -20,6 +20,19 @@ export class MainMenu extends Scene implements ChangeableScene {
             .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
         this.add
+            .text(centerX - 25, centerY - 282, "That's Not My Programmer", {
+                fontFamily: "Arial Black",
+                fontSize: "40px",
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 8,
+                align: "center",
+                wordWrap: { width: 450 },
+            })
+            .setOrigin(0.5)
+            .setDepth(2);
+
+        this.add
             .image(centerX, centerY - 120, "login-icon")
             .setOrigin(0.5)
             .setScale(0.5);
