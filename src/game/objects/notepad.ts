@@ -105,10 +105,8 @@ export default class notepad extends Phaser.GameObjects.Container {
     }
     }
     closeNotes() {
-        if (this.overlay){
-            this.overlay.destroy();
-        }
-        if (this.textarea && document.body.contains(this.textarea)) {
+        this.overlay.destroy();
+        if (document.body.contains(this.textarea)) {
             this.textarea.remove();
         }
 
