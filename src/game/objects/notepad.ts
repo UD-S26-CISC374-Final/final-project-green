@@ -1,25 +1,23 @@
 export default class notepad extends Phaser.GameObjects.Container {
-    public rect: Phaser.GameObjects.Rectangle;
-    private text: Phaser.GameObjects.Text;
+    public icon: Phaser.GameObjects.Image;
     private static LOCAL_STORAGE_KEY = "player_notepad_notes";
     private emitted: boolean;
-    constructor(scene: Phaser.Scene, x: number, y: number, emitted: boolean = true) {
+    constructor(
+        scene: Phaser.Scene,
+        x: number,
+        y: number,
+        emitted: boolean = true,
+    ) {
         super(scene, x, y);
         this.emitted = emitted;
-        this.rect = this.scene.add
-            .rectangle(0, 0, 75, 100, 0xffffff)
-            .setStrokeStyle(2, 0x000000)
+        this.icon = this.scene.add
+            .image(0, 0, "notebook-button")
+            .setOrigin(0.5)
+            .setScale(0.45)
             .setInteractive({ useHandCursor: true })
             .on("pointerdown", () => this.openNotepad());
-        this.text = this.scene.add
-            .text(0, 0, "Notepad", {
-                fontSize: "14px",
-                color: "#000000",
-            })
-            .setOrigin(0.5, 0.5);
 
-        this.add(this.rect);
-        this.add(this.text);
+        this.add(this.icon);
 
         this.scene.add.existing(this);
         this.wipeNotes(); // Clear notes at the start of each game
@@ -88,7 +86,7 @@ export default class notepad extends Phaser.GameObjects.Container {
         closeBtn.onclick = () => {
             if (!this.emitted) {
                 console.log("Emitting closeNotepad event");
-                this.scene.events.emit('closeNotepad');
+                this.scene.events.emit("closeNotepad");
                 this.emitted = true;
             }
             this.scene.children.remove(overlay);

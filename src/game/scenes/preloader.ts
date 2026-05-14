@@ -34,6 +34,10 @@ export class Preloader extends Scene {
         this.load.image("main-menu-bg", "Main_menu.png");
         this.load.image("credits_lvlselect_bg", "Credit_lvlselect_bg.jpg");
         this.load.image("login-icon", "Login_icon.png");
+        this.load.image("notepad-button", "Todays_Code_Icon.png");
+        this.load.image("notebook-button", "Notebook.png");
+        this.load.image("red-button", "Red_button.png");
+        this.load.image("green-button", "Green_Button.png");
         this.load.image("backgroundnodesk", "Backgrounds without desk.png");
         this.load.image("desk+background", "Desk+Background.png");
         this.load.image("desk", "Desk.png");
