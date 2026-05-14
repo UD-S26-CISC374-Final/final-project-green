@@ -43,11 +43,11 @@ export class EndOfDay extends Scene {
                 .text(450, 360, message, {
                     fontFamily: "Courier New",
                     fontSize: 18,
-                    color: "#ffffff",
+                    color: "#261913",
                     stroke: "#000000",
                     strokeThickness: 3,
                     align: "center",
-                    wordWrap: { width: 450 },
+                    wordWrap: { width: 430 },
                 })
                 .setOrigin(0.5)
                 .setDepth(100);
@@ -62,7 +62,7 @@ export class EndOfDay extends Scene {
                 {
                     fontFamily: "Courier New",
                     fontSize: 30,
-                    color: "#ffffff",
+                    color: "#261913",
                     stroke: "#000000",
                     strokeThickness: 4,
                     align: "center",
@@ -75,7 +75,7 @@ export class EndOfDay extends Scene {
             .text(1000, 380, "Next Day", {
                 fontFamily: "Courier New",
                 fontSize: 45,
-                color: "#ffffff",
+                color: "#261913",
                 stroke: "#000000",
                 strokeThickness: 4,
                 align: "center",
@@ -87,7 +87,7 @@ export class EndOfDay extends Scene {
                 this.changeScene();
             })
             .on("pointerover", () => {
-                this.nextDayButton.setStyle({ color: "#ffff00" });
+                this.nextDayButton.setStyle({ color: "#c47f00" });
             })
             .on("pointerout", () => {
                 this.nextDayButton.setStyle({ color: "#ffffff" });
@@ -97,7 +97,7 @@ export class EndOfDay extends Scene {
             .text(1000, 480, "Level Select", {
                 fontFamily: "Courier New",
                 fontSize: 45,
-                color: "#ffffff",
+                color: "#261913",
                 stroke: "#000000",
                 strokeThickness: 4,
                 align: "center",
@@ -110,7 +110,7 @@ export class EndOfDay extends Scene {
                 this.scene.start("LevelSelect");
             })
             .on("pointerover", () => {
-                this.levelSelectButton.setStyle({ color: "#ffff00" });
+                this.levelSelectButton.setStyle({ color: "#c47f00" });
             })
             .on("pointerout", () => {
                 this.levelSelectButton.setStyle({ color: "#ffffff" });
